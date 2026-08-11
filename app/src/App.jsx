@@ -1,8 +1,14 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowDown, ExternalLink, Play, X } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 
-const VIDEO_ID = "Xc6p7WxNs8Q";
+const PROJECT_VIDEOS = [
+  { id: "Xc6p7WxNs8Q", label: "Main showcase" },
+  { id: "EIzCjA4LbQU", label: "Combat clip 02" },
+  { id: "fGbMmU9d6NM", label: "Combat clip 03" },
+  { id: "nGm_EFrSYK8", label: "Combat clip 04" },
+];
 
 const focusAreas = [
   {
@@ -80,64 +86,90 @@ function Intro({ reduceMotion }) {
 }
 
 function VideoShowcase({ reduceMotion }) {
-  const previewUrl = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&rel=0&playsinline=1`;
+  const [activeVideo, setActiveVideo] = useState(PROJECT_VIDEOS[0]);
 
   return (
     <Dialog.Root>
-      <motion.article
-        className="project-media"
+      <motion.div
+        className="project-gallery"
         initial={reduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.65, ease: [0.2, 0.8, 0.2, 1] }}
       >
-        <div className="project-toolbar">
-          <span><i aria-hidden="true" /> Moving preview</span>
-          <span>Roblox Studio</span>
-        </div>
+        {PROJECT_VIDEOS.map((video, index) => {
+          const previewUrl = `https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&mute=1&loop=1&playlist=${video.id}&controls=0&rel=0&playsinline=1`;
 
-        <div className="project-video">
-          <img
-            className="video-fallback"
-            src={`https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg`}
-            alt="Combat Encounter Animation Project in Roblox Studio"
-          />
-          {!reduceMotion && (
-            <iframe
-              className="video-preview"
-              src={previewUrl}
-              title="Muted moving preview of the Combat Encounter Animation Project"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              loading="eager"
-              tabIndex="-1"
-            />
-          )}
-          <span className="video-shade" aria-hidden="true" />
+          return (
+            <article
+              className={`project-media ${index === 0 ? "project-media-primary" : "project-media-secondary"}`}
+              key={video.id}
+            >
+              <div className="project-toolbar">
+                <span><i aria-hidden="true" /> Moving preview</span>
+                <span>{video.label}</span>
+              </div>
 
-          <Dialog.Trigger asChild>
-            <button className="watch-button" data-video-trigger type="button">
-              <span><Play size={18} fill="currentColor" /></span>
-              Watch with sound
-            </button>
-          </Dialog.Trigger>
-        </div>
+              <div className="project-video">
+                <img
+                  className="video-fallback"
+                  src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
+                  alt={`${video.label} from the Combat Encounter Animation Project`}
+                />
+                {!reduceMotion && (
+                  <iframe
+                    className="video-preview"
+                    src={previewUrl}
+                    title={`Muted moving preview: ${video.label}`}
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    loading={index === 0 ? "eager" : "lazy"}
+                    tabIndex="-1"
+                  />
+                )}
+                <span className="video-shade" aria-hidden="true" />
 
-        <div className="project-timeline" aria-hidden="true">
-          <motion.span
-            data-motion="playhead"
-            animate={reduceMotion ? { left: 0 } : { left: ["0%", "calc(100% - 72px)"] }}
-            transition={reduceMotion ? { duration: 0 } : { duration: 5.5, ease: "linear", repeat: Infinity }}
-          />
-        </div>
-      </motion.article>
+                <Dialog.Trigger asChild>
+                  <button
+                    className="watch-button"
+                    data-video-trigger
+                    data-video-id={video.id}
+                    type="button"
+                    aria-label={`Watch ${video.label} with sound`}
+                    onClick={() => setActiveVideo(video)}
+                  >
+                    <span><Play size={18} fill="currentColor" /></span>
+                    Watch with sound
+                  </button>
+                </Dialog.Trigger>
+              </div>
+
+              {index === 0 && (
+                <div className="project-timeline" aria-hidden="true">
+                  <motion.span
+                    data-motion="playhead"
+                    animate={reduceMotion ? { left: 0 } : { left: ["0%", "calc(100% - 72px)"] }}
+                    transition={reduceMotion ? { duration: 0 } : { duration: 5.5, ease: "linear", repeat: Infinity }}
+                  />
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </motion.div>
 
       <Dialog.Portal>
         <Dialog.Overlay className="dialog-overlay" />
-        <Dialog.Content className="dialog-content">
+        <Dialog.Content
+          className="dialog-content"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            document.querySelector(`[data-video-id="${activeVideo.id}"]`)?.focus();
+          }}
+        >
           <div className="dialog-heading">
             <div>
               <Dialog.Title>Combat Encounter Animation Project</Dialog.Title>
-              <Dialog.Description>Roblox animation showcase</Dialog.Description>
+              <Dialog.Description>{activeVideo.label} / Roblox animation showcase</Dialog.Description>
             </div>
             <Dialog.Close className="dialog-close" aria-label="Close video">
               <X size={20} />
@@ -145,8 +177,8 @@ function VideoShowcase({ reduceMotion }) {
           </div>
           <div className="dialog-video">
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0`}
-              title="Combat Encounter Animation Project: Roblox showcase"
+              src={`https://www.youtube-nocookie.com/embed/${activeVideo.id}?autoplay=1&rel=0`}
+              title={`Combat Encounter Animation Project: ${activeVideo.label}`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
@@ -190,8 +222,8 @@ function Work({ reduceMotion }) {
             <div><dt>Format</dt><dd>Roblox showcase</dd></div>
           </dl>
 
-          <a href={`https://youtu.be/${VIDEO_ID}`} target="_blank" rel="noreferrer">
-            Open on YouTube <ExternalLink size={15} />
+          <a href={`https://youtu.be/${PROJECT_VIDEOS[0].id}`} target="_blank" rel="noreferrer">
+            Open main showcase on YouTube <ExternalLink size={15} />
           </a>
         </motion.div>
       </div>

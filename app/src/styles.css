@@ -271,11 +271,18 @@ iframe {
 
 .project-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.75fr) minmax(280px, 0.75fr);
+  grid-template-columns: minmax(0, 1.85fr) minmax(280px, 0.65fr);
   gap: clamp(40px, 5vw, 78px);
-  align-items: center;
+  align-items: start;
   max-width: 1280px;
   margin: 0 auto;
+}
+
+.project-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
 }
 
 .project-media {
@@ -285,6 +292,37 @@ iframe {
   border: 1px solid #292929;
   border-radius: 18px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
+}
+
+.project-media-primary {
+  grid-column: 1 / -1;
+}
+
+.project-media-secondary {
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.project-media-secondary .project-toolbar {
+  min-height: 38px;
+  padding: 0 12px;
+  font-size: 8px;
+}
+
+.project-media-secondary .watch-button {
+  right: 9px;
+  bottom: 8px;
+  min-height: 34px;
+  padding: 4px;
+}
+
+.project-media-secondary .watch-button > span {
+  width: 26px;
+  height: 26px;
+}
+
+.project-media-secondary .watch-button {
+  font-size: 0;
 }
 
 .project-toolbar {
@@ -402,6 +440,7 @@ iframe {
 
 .project-copy {
   max-width: 430px;
+  padding-top: 18px;
 }
 
 .project-kind {
@@ -804,6 +843,15 @@ footer > a:last-child {
 
   .project-layout {
     gap: 40px;
+  }
+
+  .project-gallery {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .project-media-primary {
+    grid-column: auto;
   }
 
   .project-media {
