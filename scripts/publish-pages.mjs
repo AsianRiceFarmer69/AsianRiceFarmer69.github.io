@@ -1,4 +1,4 @@
-import { cp, copyFile, mkdir, rm } from "node:fs/promises";
+import { cp, copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -8,9 +8,11 @@ const buildDirectory = resolve(repositoryRoot, "dist");
 
 await rm(resolve(repositoryRoot, "assets"), { recursive: true, force: true });
 await mkdir(resolve(repositoryRoot, "assets"), { recursive: true });
-await copyFile(
-  resolve(buildDirectory, "index.html"),
+const builtHtml = await readFile(resolve(buildDirectory, "index.html"), "utf8");
+await writeFile(
   resolve(repositoryRoot, "index.html"),
+  builtHtml.replace(/\r\n/g, "\n"),
+  "utf8",
 );
 await copyFile(
   resolve(buildDirectory, "favicon.svg"),

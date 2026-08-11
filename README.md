@@ -1,25 +1,38 @@
-# ARF Motion — Roblox Animation Portfolio
+# Andrew Le — Roblox Animation Portfolio
 
-A React-powered portfolio for Andrew Le's Roblox animation and commission work.
+A compact, interactive portfolio for Andrew Le's Roblox animation commission work.
 
-The site uses a few focused libraries:
+## Design goals
 
-- **React** for the page and reusable UI components.
-- **React Three Fiber + Three.js** for the interactive 3D impact scene.
-- **Framer Motion** for smooth page transitions and scroll reveals.
-- **Lucide React** for lightweight interface icons.
+- Show the animation work immediately.
+- Keep the full page close to one desktop viewport.
+- Use interaction to organize information instead of adding long sections.
+- Respect keyboard navigation and reduced-motion preferences.
+- Avoid decorative 3D or WebGL.
 
-## Run it locally
+## Open-source foundation
+
+- **React** for the interface.
+- **Motion** for smooth, accessible animation.
+- **Radix Primitives** for keyboard-friendly tabs and the video dialog.
+- **VengeanceUI** source patterns for Stagger Text, Animated Button, and Highlight Grid.
+- **Lucide** for small interface icons.
+
+VengeanceUI components are adapted to the project's plain CSS setup. See
+`THIRD_PARTY_NOTICES.md` for the license notice.
+
+## Run locally
 
 1. Install Node.js.
 2. Run `npm install`.
 3. Run `npm run dev`.
 4. Open the local address shown in the terminal.
 
-## Build it
+## Build for GitHub Pages
 
-Run `npm run build:pages`. This builds the React app and copies the generated `index.html` and `assets` files to the repository root, where GitHub Pages serves them from the main branch.
+Run `npm run build:pages`. Vite builds the editable source in `app/`, then the
+generated `index.html`, `favicon.svg`, and hashed `assets/` are copied to the
+repository root for GitHub Pages.
 
-The editable website source lives in `app/`. The root `index.html`, `favicon.svg`, and `assets/` files are generated, so edit the React source instead of changing those by hand.
-
-The portfolio is intentionally a single-page site so it stays fast, simple to update, and reliable on GitHub Pages.
+Run `npm run check:visual` for the automated desktop, mobile, interaction, and
+reduced-motion browser checks.
