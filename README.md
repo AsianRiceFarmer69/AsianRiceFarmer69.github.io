@@ -15,7 +15,8 @@ A React portfolio for Andrew Le's Roblox animation commission work, published as
 
 - **React + Vite** for the static application and GitHub Pages build.
 - **Motion for React** for component, pointer, and scroll interactions.
-- **Aceternity UI** for adapted Gooey Input and Card Spotlight components.
+- **Tailwind CSS** through its official Vite plugin for Aceternity utility classes.
+- **Aceternity UI** for the official registry Gooey Input and an adapted Card Spotlight.
 - **Radix Dialog** for the accessible YouTube lightbox.
 - **Lucide** for interface icons.
 

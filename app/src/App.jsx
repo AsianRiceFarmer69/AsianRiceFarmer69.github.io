@@ -1,4 +1,3 @@
-import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowRight,
@@ -13,7 +12,7 @@ import {
 } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import CardSpotlight from "./components/ui/CardSpotlight";
-import GooeyInput from "./components/ui/GooeyInput";
+import { GooeyInput } from "./components/ui/gooey-input";
 
 const VIDEO_ID = "Xc6p7WxNs8Q";
 
@@ -291,19 +290,13 @@ function About() {
 }
 
 function BriefTest() {
-  const [status, setStatus] = useState("");
-
   return (
     <section className="brief-section" id="brief">
       <span className="test-label"><Sparkles size={14} /> Interaction test</span>
-      <h2>What are you building?</h2>
-      <p>Try the Aceternity-style Gooey Input. This demo does not send or save anything.</p>
-      <GooeyInput
-        onSubmit={(idea) => setStatus(`Test received: “${idea}” — nothing was sent.`)}
-      />
-      <p className="brief-status" role="status" aria-live="polite">
-        {status || "Click “Start a brief,” type an idea, and press Send."}
-      </p>
+      <h2>Try the real component.</h2>
+      <p>This is Aceternity UI’s official Gooey Input from its public component registry.</p>
+      <GooeyInput className="official-gooey-input" placeholder="Search..." />
+      <p className="brief-status">Official defaults: 115px collapsed · 200px expanded · 50px offset.</p>
     </section>
   );
 }
