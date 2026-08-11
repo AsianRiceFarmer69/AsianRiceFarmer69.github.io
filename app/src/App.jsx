@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Clapperboard, ExternalLink, MessageCircle, Play, Sparkles, X } from "lucide-react";
+import { Clapperboard, MessageCircle, Play, Sparkles, X } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
@@ -39,61 +39,39 @@ function Header() {
         <strong>Andrew Le</strong>
       </a>
       <nav aria-label="Main navigation">
-        <a href="#about">About</a>
+        <a href="#expertise">Skills</a>
         <a href="#work">Work</a>
       </nav>
     </header>
   );
 }
 
-function Wave() {
+function MovingLines({ reduceMotion }) {
   return (
-    <svg className="hero-wave" viewBox="0 0 1440 520" preserveAspectRatio="none" aria-hidden="true">
+    <motion.svg
+      className="ambient-wave"
+      data-motion="ambient-wave"
+      viewBox="0 0 900 240"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      animate={reduceMotion ? { x: 0 } : { x: ["-5%", "5%", "-5%"] }}
+      transition={reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
+    >
       {Array.from({ length: 12 }, (_, index) => (
         <path
-          d="M-90 440C180 285 300 500 535 345S800 85 1040 175s265 230 500 55"
+          d="M-80 180C90 65 220 225 390 120S665 40 980 150"
           key={index}
-          transform={`translate(0 ${index * 8})`}
+          transform={`translate(0 ${index * 5})`}
         />
       ))}
-    </svg>
+    </motion.svg>
   );
 }
 
-function Hero({ reduceMotion }) {
-  return (
-    <section className="hero" id="about">
-      <Wave />
-      <motion.div
-        className="hero-profile"
-        initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55 }}
-      >
-        <div className="profile-mark">AL</div>
-        <div>
-          <p className="profile-kicker">Roblox animation</p>
-          <h1>Andrew Le</h1>
-          <p className="profile-role">Roblox Animator</p>
-        </div>
-      </motion.div>
-
-      <motion.p
-        className="hero-bio"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.55, delay: 0.12 }}
-      >
-        I animate combat and cinematic sequences for Roblox. <strong>I've started since 2023</strong>,
-        using Moon Animator and learning Blender.
-      </motion.p>
-    </section>
-  );
-}
-
-function Expertise() {
+function Expertise({ reduceMotion }) {
   return (
     <section className="expertise-section" id="expertise">
+      <MovingLines reduceMotion={reduceMotion} />
       <div className="section-heading">
         <p>Expertise</p>
         <h2>What I do</h2>
@@ -205,19 +183,11 @@ function App() {
         <a className="skip-link" href="#work">Skip to work</a>
         <Header />
         <main>
-          <Hero reduceMotion={reduceMotion} />
-          <Expertise />
+          <Expertise reduceMotion={reduceMotion} />
           <Work />
         </main>
         <footer>
           <p>Andrew Le / Roblox Animator / Since 2023</p>
-          <a
-            href="https://github.com/AsianRiceFarmer69/AsianRiceFarmer69.github.io"
-            target="_blank"
-            rel="noreferrer"
-          >
-            View source <ExternalLink size={13} />
-          </a>
         </footer>
       </div>
     </MotionConfig>
