@@ -55,7 +55,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   installErrorCollection(page, consoleErrors, "desktop");
   await page.goto(address, { waitUntil: "domcontentloaded" });
-  await page.locator(".project-media").waitFor({ state: "visible" });
+  await page.locator(".project-media-primary").waitFor({ state: "visible" });
   await page.waitForTimeout(700);
 
   const desktopLayout = await layout(page);
@@ -73,14 +73,17 @@ try {
   assert.equal(await page.locator(".capability-card").count(), 0, "The old component cards still render");
   await page.screenshot({ path: resolve(outputDirectory, "desktop-intro.png") });
 
-  await reveal(page, ".project-media");
+  await reveal(page, ".project-gallery");
   const preview = page.locator(".video-preview");
-  assert.equal(await preview.count(), 1, "Moving YouTube preview is missing");
-  const previewSource = await preview.getAttribute("src");
-  assert.match(previewSource, /autoplay=1/);
-  assert.match(previewSource, /mute=1/);
-  assert.match(previewSource, /loop=1/);
-  assert.equal(await page.locator(".watch-button").count(), 1, "Watch button is missing");
+  assert.equal(await preview.count(), 4, "All four moving project previews should render");
+  const previewSources = await preview.evaluateAll((frames) => frames.map((frame) => frame.getAttribute("src")));
+  for (const videoId of ["Xc6p7WxNs8Q", "EIzCjA4LbQU", "fGbMmU9d6NM", "nGm_EFrSYK8"]) {
+    assert.ok(previewSources.some((source) => source.includes(videoId)), `Missing project clip ${videoId}`);
+  }
+  assert.ok(previewSources.every((source) => /autoplay=1/.test(source)));
+  assert.ok(previewSources.every((source) => /mute=1/.test(source)));
+  assert.ok(previewSources.every((source) => /loop=1/.test(source)));
+  assert.equal(await page.locator(".watch-button").count(), 4, "Each project clip needs a watch button");
 
   const playhead = page.locator('[data-motion="playhead"]');
   const playheadStart = await leftPosition(playhead);
@@ -98,11 +101,12 @@ try {
   await page.screenshot({ path: resolve(outputDirectory, "desktop-about.png") });
 
   await page.locator("#work").scrollIntoViewIfNeeded();
-  const videoTrigger = page.locator("[data-video-trigger]");
+  const videoTrigger = page.locator("[data-video-trigger]").nth(1);
   await videoTrigger.focus();
   await page.keyboard.press("Enter");
   await page.locator(".dialog-video iframe").waitFor({ state: "visible" });
   assert.equal(await page.getByRole("dialog").count(), 1, "Video dialog did not open");
+  assert.match(await page.locator(".dialog-video iframe").getAttribute("src"), /EIzCjA4LbQU/);
   await page.keyboard.press("Escape");
   await page.getByRole("dialog").waitFor({ state: "detached" });
   await page.waitForTimeout(120);
@@ -113,7 +117,7 @@ try {
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
   installErrorCollection(mobile, consoleErrors, "mobile");
   await mobile.goto(address, { waitUntil: "domcontentloaded" });
-  await mobile.locator(".project-media").waitFor({ state: "visible" });
+  await mobile.locator(".project-media-primary").waitFor({ state: "visible" });
   const mobileLayout = await layout(mobile);
   assert.equal(mobileLayout.scrollWidth, mobileLayout.clientWidth, "Mobile has horizontal overflow");
   assert.equal(
@@ -125,7 +129,7 @@ try {
     1,
     "Mobile project should use one column",
   );
-  for (const selector of [".project-media", ".project-copy", ".focus-list", ".about-inner"]) {
+  for (const selector of [".project-gallery", ".project-copy", ".focus-list", ".about-inner"]) {
     await reveal(mobile, selector);
   }
   await mobile.screenshot({ path: resolve(outputDirectory, "mobile-full.png"), fullPage: true });
@@ -136,15 +140,15 @@ try {
   });
   installErrorCollection(reduced, consoleErrors, "reduced-motion");
   await reduced.goto(address, { waitUntil: "domcontentloaded" });
-  await reduced.locator(".project-media").waitFor({ state: "visible" });
+  await reduced.locator(".project-media-primary").waitFor({ state: "visible" });
   assert.equal(await reduced.locator(".video-preview").count(), 0, "Reduced motion should stop autoplay preview");
-  assert.equal(await reduced.locator(".video-fallback").count(), 1);
+  assert.equal(await reduced.locator(".video-fallback").count(), 4);
   const reducedPlayhead = reduced.locator('[data-motion="playhead"]');
   const reducedStart = await leftPosition(reducedPlayhead);
   await reduced.waitForTimeout(350);
   const reducedEnd = await leftPosition(reducedPlayhead);
   assert.ok(Math.abs(reducedEnd - reducedStart) <= 1, "Reduced motion should stop the playhead");
-  const reducedTrigger = reduced.locator("[data-video-trigger]");
+  const reducedTrigger = reduced.locator("[data-video-trigger]").first();
   await reducedTrigger.click();
   assert.equal(await reduced.getByRole("dialog").count(), 1, "Video dialog should still work with reduced motion");
 
