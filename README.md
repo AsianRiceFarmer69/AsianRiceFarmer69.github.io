@@ -18,8 +18,9 @@ An interactive portfolio for Andrew Le's Roblox animation commission work.
 - **Radix Primitives** for accessible tabs and the video dialog.
 - **Lucide** for interface icons.
 - **vCard Personal Portfolio** for the MIT-licensed responsive layout structure.
+- **VengeanceUI Radial Glow Button** for the animated showcase control.
 
-See `THIRD_PARTY_NOTICES.md` for the complete vCard license notice.
+See `THIRD_PARTY_NOTICES.md` for the complete open-source license notices.
 
 ## Run locally
 
