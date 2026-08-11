@@ -79,22 +79,35 @@ try {
   assert.match(previewSource, /mute=1/);
   assert.match(previewSource, /loop=1/);
 
-  const vengeanceButton = page.locator(".vui-rg-button");
-  assert.equal(await vengeanceButton.count(), 1, "VengeanceUI Radial Glow Button is missing");
-  const glowBefore = await vengeanceButton.evaluate((element) =>
-    getComputedStyle(element).getPropertyValue("--vui-rg-pos-x").trim(),
+  const vengeanceButton = page.locator(".vui-animated-button");
+  assert.equal(await vengeanceButton.count(), 1, "VengeanceUI Animated Button is missing");
+  const maskSamples = [];
+  const opacitySamples = [];
+  for (let sample = 0; sample < 12; sample += 1) {
+    maskSamples.push(
+      await page.locator(".vui-animated-button-label").evaluate((element) => {
+        const style = getComputedStyle(element);
+        return style.maskImage || style.webkitMaskImage;
+      }),
+    );
+    opacitySamples.push(
+      Number(await page.locator(".vui-animated-button-border").evaluate((element) => getComputedStyle(element).opacity)),
+    );
+    await page.waitForTimeout(120);
+  }
+  assert.ok(new Set(maskSamples).size >= 3, "Animated Button text shine does not move");
+  assert.ok(new Set(opacitySamples.map((value) => value.toFixed(2))).size >= 3, "Animated Button border shine does not animate");
+  assert.ok(Math.max(...opacitySamples) >= 0.2, "Animated Button border shine is not visible");
+
+  const frameCounter = page.locator(".vui-animated-number");
+  const frameBefore = await frameCounter.getAttribute("data-value");
+  await page.waitForFunction(
+    (previous) => document.querySelector(".vui-animated-number")?.getAttribute("data-value") !== previous,
+    frameBefore,
   );
-  await vengeanceButton.hover();
-  await page.waitForTimeout(820);
-  const glowAfter = await vengeanceButton.evaluate((element) =>
-    getComputedStyle(element).getPropertyValue("--vui-rg-pos-x").trim(),
-  );
-  const shineOpacity = Number(
-    await page.locator(".vui-rg-shine").evaluate((element) => getComputedStyle(element).opacity),
-  );
-  assert.notEqual(glowBefore, glowAfter, "Radial gradient does not animate on hover");
-  assert.ok(shineOpacity >= 0.9, "Radial button shine is not visible on hover");
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-vengeance-button.png"), fullPage: true });
+  const frameAfter = await frameCounter.getAttribute("data-value");
+  assert.notEqual(frameBefore, frameAfter, "VengeanceUI Animated Number does not change");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-vengeance-components.png"), fullPage: true });
 
   const avatarTravel = await axisRange(page.locator('[data-motion="avatar"]'), "y");
   const playheadTravel = await axisRange(page.locator('[data-motion="playhead"]'), "x", 10, 100);
@@ -206,7 +219,8 @@ try {
         desktop: {
           layout: desktopLayout,
           autoplayPreview: true,
-          vengeanceRadialButton: true,
+          vengeanceAnimatedButton: true,
+          vengeanceAnimatedNumber: true,
           avatarTravelPx: avatarTravel,
           playheadTravelPx: playheadTravel,
           pointerTiltDelta: Number(Math.abs(upperLeftTilt.m13 - lowerRightTilt.m13).toFixed(3)),

@@ -1,22 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-@property --vui-rg-pos-x { syntax: "<percentage>"; initial-value: 40%; inherits: false; }
-@property --vui-rg-pos-y { syntax: "<percentage>"; initial-value: 140%; inherits: false; }
-@property --vui-rg-spread-x { syntax: "<percentage>"; initial-value: 130%; inherits: false; }
-@property --vui-rg-spread-y { syntax: "<percentage>"; initial-value: 170%; inherits: false; }
-@property --vui-rg-color-1 { syntax: "<color>"; initial-value: #000022; inherits: false; }
-@property --vui-rg-color-2 { syntax: "<color>"; initial-value: #1f3f6d; inherits: false; }
-@property --vui-rg-color-3 { syntax: "<color>"; initial-value: #469396; inherits: false; }
-@property --vui-rg-color-4 { syntax: "<color>"; initial-value: #f1ffa5; inherits: false; }
-@property --vui-rg-color-5 { syntax: "<color>"; initial-value: hsl(250 80% 2.5%); inherits: false; }
-@property --vui-rg-border-angle { syntax: "<angle>"; initial-value: 180deg; inherits: true; }
-@property --vui-rg-border-color-1 { syntax: "<color>"; initial-value: hsla(230, 75%, 90%, 0.7); inherits: true; }
-@property --vui-rg-border-color-2 { syntax: "<color>"; initial-value: hsla(230, 50%, 90%, 0.25); inherits: true; }
-@property --vui-rg-stop-1 { syntax: "<percentage>"; initial-value: 37.35%; inherits: false; }
-@property --vui-rg-stop-2 { syntax: "<percentage>"; initial-value: 61.36%; inherits: false; }
-@property --vui-rg-stop-3 { syntax: "<percentage>"; initial-value: 78.42%; inherits: false; }
-@property --vui-rg-stop-4 { syntax: "<percentage>"; initial-value: 93.52%; inherits: false; }
-@property --vui-rg-stop-5 { syntax: "<percentage>"; initial-value: 100%; inherits: false; }
+@property --mask-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
 
 :root {
   font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -321,7 +309,43 @@ iframe {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 7px;
   letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
 }
+
+.vui-animated-number {
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.vui-number-holder {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.vui-number-strip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.vui-number-column {
+  position: absolute;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vui-number-column-before { bottom: 100%; }
+.vui-number-column-after { top: 100%; }
 
 .avatar-playhead {
   position: absolute;
@@ -725,127 +749,66 @@ iframe {
   animation: live-dot 1.45s ease-out infinite;
 }
 
-.vui-rg-button {
-  --vui-rg-bg: radial-gradient(
-    var(--vui-rg-spread-x) var(--vui-rg-spread-y) at var(--vui-rg-pos-x) var(--vui-rg-pos-y),
-    var(--vui-rg-color-1) var(--vui-rg-stop-1),
-    var(--vui-rg-color-2) var(--vui-rg-stop-2),
-    var(--vui-rg-color-3) var(--vui-rg-stop-3),
-    var(--vui-rg-color-4) var(--vui-rg-stop-4),
-    var(--vui-rg-color-5) var(--vui-rg-stop-5)
-  );
+.vui-animated-button {
+  --shine: rgba(255, 255, 255, 0.66);
   position: relative;
-  min-width: 160px;
-  min-height: 51px;
-  padding: 16px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.95);
-  background: var(--vui-rg-bg);
-  border: 0;
-  border-radius: 11px;
+  color: #f5f5f5;
+  background: rgba(8, 8, 9, 0.84);
+  border: 1px solid #2e2e31;
+  border-radius: 8px;
   cursor: pointer;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.95);
-  transition:
-    --vui-rg-pos-x 750ms,
-    --vui-rg-pos-y 750ms,
-    --vui-rg-spread-x 750ms,
-    --vui-rg-spread-y 750ms,
-    --vui-rg-color-1 750ms,
-    --vui-rg-color-2 750ms,
-    --vui-rg-color-3 750ms,
-    --vui-rg-color-4 750ms,
-    --vui-rg-color-5 750ms,
-    --vui-rg-border-angle 750ms,
-    --vui-rg-border-color-1 750ms,
-    --vui-rg-border-color-2 750ms,
-    --vui-rg-stop-1 750ms,
-    --vui-rg-stop-2 750ms,
-    --vui-rg-stop-3 750ms,
-    --vui-rg-stop-4 750ms,
-    --vui-rg-stop-5 750ms;
 }
 
-.vui-rg-button::before {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  padding: 1px;
-  pointer-events: none;
-  background-image: linear-gradient(
-    var(--vui-rg-border-angle),
-    var(--vui-rg-border-color-1),
-    var(--vui-rg-border-color-2)
-  );
-  border-radius: inherit;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  content: "";
+.site-canvas[data-theme="light"] .vui-animated-button {
+  --shine: rgba(0, 0, 0, 0.66);
+  color: #27241f;
+  background: #faf9f6;
+  border-color: #d8d4ca;
 }
 
-.vui-rg-button:hover,
-.vui-rg-button:focus-visible {
-  --vui-rg-pos-x: 0%;
-  --vui-rg-pos-y: 120%;
-  --vui-rg-spread-x: 110.24%;
-  --vui-rg-spread-y: 110.2%;
-  --vui-rg-color-1: #000020;
-  --vui-rg-color-2: #f1ffa5;
-  --vui-rg-color-3: #469396;
-  --vui-rg-color-4: #1f3f6d;
-  --vui-rg-stop-1: 0%;
-  --vui-rg-stop-2: 10%;
-  --vui-rg-stop-3: 35.44%;
-  --vui-rg-stop-4: 71.34%;
-  --vui-rg-stop-5: 150%;
-  --vui-rg-border-angle: 190deg;
-  --vui-rg-border-color-1: hsla(320, 75%, 90%, 0.1);
-  --vui-rg-border-color-2: hsla(320, 50%, 90%, 0.35);
-  --vui-rg-line-opacity: 1;
-}
-
-.vui-rg-bg {
-  position: absolute;
-  z-index: 0;
-  inset: 1px;
-  background: var(--vui-rg-bg);
-  border-radius: inherit;
-}
-
-.vui-rg-label {
+.vui-animated-button-label {
   position: relative;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  width: 100%;
+  height: 100%;
+  letter-spacing: 0.02em;
+  animation: vui-mask-sweep 2s linear infinite;
 }
 
-.vui-rg-shine {
+.vui-animated-button-border {
   position: absolute;
   z-index: 1;
   inset: 0;
-  overflow: visible;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(-75deg, transparent 30%, var(--shine) 50%, transparent 70%);
+  background-size: 200% 100%;
   border-radius: inherit;
-  mix-blend-mode: soft-light;
-  opacity: var(--vui-rg-line-opacity, 0);
-  container-type: size;
-  transition: opacity 300ms ease;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  animation: vui-border-shine 2s linear infinite;
 }
 
-.vui-rg-shine > span {
-  position: absolute;
-  inset: 0;
-  height: 100cqh;
-  overflow: visible;
-  aspect-ratio: 1;
-  animation: vui-rg-slide 1.2s ease-in-out infinite alternate;
+@keyframes vui-mask-sweep {
+  0% { --mask-x: 100%; }
+  50%, 100% { --mask-x: -100%; }
 }
 
-.vui-rg-shine > span::before {
-  position: absolute;
-  inset: -100%;
-  background: conic-gradient(from 225deg, transparent 0, #fff 90deg, transparent 90deg);
-  animation: vui-rg-spin 2.4s infinite linear;
-  content: "";
+@keyframes vui-border-shine {
+  0% { background-position: 100% 0; opacity: 0; }
+  25% { opacity: 1; }
+  50% { background-position: 0 0; opacity: 0; }
+  100% { background-position: 0 0; opacity: 0; }
 }
 
 .watch-button {
@@ -859,8 +822,6 @@ iframe {
   min-height: 45px;
   padding: 5px 15px 5px 5px;
   color: #fff;
-  background: var(--vui-rg-bg);
-  border: 0;
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38);
@@ -1401,17 +1362,6 @@ iframe {
   16% { opacity: 0.95; }
   84% { opacity: 0.95; }
   100% { left: 93%; opacity: 0.3; }
-}
-
-@keyframes vui-rg-spin {
-  0% { rotate: 0deg; }
-  15%, 35% { rotate: 90deg; }
-  65%, 85% { rotate: 270deg; }
-  100% { rotate: 360deg; }
-}
-
-@keyframes vui-rg-slide {
-  to { transform: translate(calc(100cqw - 100%), 0); }
 }
 
 @keyframes orbit-one {
