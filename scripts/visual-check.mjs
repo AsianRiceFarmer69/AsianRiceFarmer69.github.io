@@ -43,6 +43,10 @@ async function reveal(page, selector) {
   await page.waitForTimeout(650);
 }
 
+async function leftPosition(locator) {
+  return Number.parseFloat(await locator.evaluate((element) => getComputedStyle(element).left));
+}
+
 try {
   await server.listen();
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -51,79 +55,49 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   installErrorCollection(page, consoleErrors, "desktop");
   await page.goto(address, { waitUntil: "domcontentloaded" });
-  await page.locator(".hero-showcase").waitFor({ state: "visible" });
-  await page.waitForTimeout(900);
+  await page.locator(".project-media").waitFor({ state: "visible" });
+  await page.waitForTimeout(700);
 
   const desktopLayout = await layout(page);
   assert.equal(desktopLayout.scrollWidth, desktopLayout.clientWidth, "Desktop has horizontal overflow");
-  assert.ok(desktopLayout.height >= 3000, "Expected the complete portfolio sections");
-  assert.match(await page.locator("h1").innerText(), /Roblox animation[.]\s*Made to hit[.]/);
+  assert.ok(desktopLayout.height >= 2500, "The complete editorial portfolio is unexpectedly short");
+  assert.match(await page.locator("h1").innerText(), /Hello, I'm Andrew[.]\s*I animate for Roblox[.]/);
+  assert.match(await page.locator(".intro-copy").innerText(), /I've started since 2023/);
+  assert.equal(await page.locator(".intro-copy p").count(), 3, "Intro should stay direct and three paragraphs long");
   assert.equal(
     await page.locator(".site-header").evaluate((element) => getComputedStyle(element).position),
     "sticky",
   );
-  assert.equal(await page.locator("canvas").count(), 0, "Heavy canvas effect was added unexpectedly");
-  assert.equal(await page.locator('[class*="vui-"]').count(), 0, "VengeanceUI remnants are still rendered");
+  assert.equal(await page.locator("canvas").count(), 0, "A heavy canvas effect was added unexpectedly");
+  assert.equal(await page.locator(".official-gooey-input").count(), 0, "The Gooey Input demo still renders");
+  assert.equal(await page.locator(".capability-card").count(), 0, "The old component cards still render");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-intro.png") });
 
+  await reveal(page, ".project-media");
   const preview = page.locator(".video-preview");
   assert.equal(await preview.count(), 1, "Moving YouTube preview is missing");
   const previewSource = await preview.getAttribute("src");
   assert.match(previewSource, /autoplay=1/);
   assert.match(previewSource, /mute=1/);
   assert.match(previewSource, /loop=1/);
-  assert.equal(await page.locator(".watch-button").count(), 1, "Simple watch button is missing");
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-roborock-hero.png") });
+  assert.equal(await page.locator(".watch-button").count(), 1, "Watch button is missing");
 
-  await reveal(page, ".capability-grid");
-  assert.equal(await page.locator(".capability-card").count(), 3);
-  const firstCard = page.locator(".capability-card").first();
-  const cardBox = await firstCard.boundingBox();
-  assert.ok(cardBox, "Capability card is missing");
-  const spotlightLayer = firstCard.locator('[data-testid="card-spotlight-layer"]');
-  const spotlightBefore = await spotlightLayer.evaluate((element) => getComputedStyle(element).backgroundImage);
-  await page.mouse.move(cardBox.x + cardBox.width * 0.8, cardBox.y + cardBox.height * 0.25);
-  await page.waitForTimeout(180);
-  const spotlightAfter = await spotlightLayer.evaluate((element) => getComputedStyle(element).backgroundImage);
-  assert.notEqual(spotlightBefore, spotlightAfter, "Aceternity Card Spotlight does not follow the pointer");
-  assert.match(spotlightAfter, /radial-gradient/);
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-aceternity-spotlight.png") });
+  const playhead = page.locator('[data-motion="playhead"]');
+  const playheadStart = await leftPosition(playhead);
+  await page.waitForTimeout(550);
+  const playheadEnd = await leftPosition(playhead);
+  assert.ok(Math.abs(playheadEnd - playheadStart) >= 20, "The project playhead is not visibly moving");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-selected-work.png") });
 
-  await reveal(page, ".process-section");
-  assert.equal(await page.locator(".process-steps article").count(), 3);
-  assert.match(await page.locator(".process-intro").innerText(), /From your idea to motion/);
-  const processBackground = await page.locator(".process-section").evaluate(
-    (element) => getComputedStyle(element).backgroundColor,
-  );
-  assert.equal(processBackground, "rgb(5, 5, 6)", "Agency-style process panel should be dark");
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-agency-process.png") });
+  assert.equal(await page.locator(".focus-list article").count(), 3, "Expected three honest focus areas");
+  await reveal(page, ".focus-list");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-focus.png") });
 
-  await reveal(page, ".brief-section");
-  const gooey = page.locator(".official-gooey-input");
-  const gooeyFilterWrap = gooey.locator(":scope > div");
-  const gooeyRow = gooeyFilterWrap.locator(":scope > div").first();
-  const collapsedWidth = (await gooeyRow.boundingBox()).width;
-  assert.ok(Math.abs(collapsedWidth - 115) <= 1, `Official collapsed width was ${collapsedWidth}px`);
-  const gooeyButton = gooey.getByRole("button");
-  await gooeyButton.click();
-  await page.waitForTimeout(520);
-  const searchInput = gooey.getByRole("searchbox");
-  assert.equal(await searchInput.isEnabled(), true);
-  assert.equal(await searchInput.evaluate((element) => document.activeElement === element), true);
-  const expandedWidth = (await gooeyRow.boundingBox()).width;
-  assert.ok(Math.abs(expandedWidth - 200) <= 1, `Official expanded width was ${expandedWidth}px`);
-  const expandedMargin = Number.parseFloat(await gooeyRow.evaluate((element) => getComputedStyle(element).marginLeft));
-  assert.ok(Math.abs(expandedMargin - 50) <= 1, `Official expanded offset was ${expandedMargin}px`);
-  const filterStyle = await gooeyFilterWrap.evaluate(
-    (element) => getComputedStyle(element).filter,
-  );
-  assert.match(filterStyle, /url/);
-  assert.equal(await gooey.locator("feGaussianBlur").count(), 1, "Gooey SVG blur filter is missing");
-  assert.equal(await gooey.getByRole("button", { name: /send/i }).count(), 0, "Custom Send button still exists");
-  await searchInput.fill("Combat");
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-official-aceternity-gooey.png") });
+  await reveal(page, ".about-section");
+  assert.match(await page.locator(".about-section h2").innerText(), /Moon Animator is my foundation/);
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-about.png") });
 
-  await page.locator("#top").scrollIntoViewIfNeeded();
-  await page.waitForTimeout(300);
+  await page.locator("#work").scrollIntoViewIfNeeded();
   const videoTrigger = page.locator("[data-video-trigger]");
   await videoTrigger.focus();
   await page.keyboard.press("Enter");
@@ -131,29 +105,30 @@ try {
   assert.equal(await page.getByRole("dialog").count(), 1, "Video dialog did not open");
   await page.keyboard.press("Escape");
   await page.getByRole("dialog").waitFor({ state: "detached" });
+  await page.waitForTimeout(120);
   assert.equal(await videoTrigger.evaluate((element) => document.activeElement === element), true);
 
-  for (const selector of [".capability-grid", ".process-steps", ".about-section", ".brief-section"]) {
-    await reveal(page, selector);
-  }
   await page.screenshot({ path: resolve(outputDirectory, "desktop-full.png"), fullPage: true });
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
   installErrorCollection(mobile, consoleErrors, "mobile");
   await mobile.goto(address, { waitUntil: "domcontentloaded" });
-  await mobile.locator(".hero-showcase").waitFor({ state: "visible" });
+  await mobile.locator(".project-media").waitFor({ state: "visible" });
   const mobileLayout = await layout(mobile);
   assert.equal(mobileLayout.scrollWidth, mobileLayout.clientWidth, "Mobile has horizontal overflow");
   assert.equal(
-    await mobile.locator(".site-nav").evaluate((element) => getComputedStyle(element).display),
+    await mobile.locator(".site-header .brand-name").evaluate((element) => getComputedStyle(element).display),
     "none",
   );
-  await reveal(mobile, ".brief-section");
-  await mobile.locator(".official-gooey-input").getByRole("button").click();
-  await mobile.waitForTimeout(520);
-  const expandedMobileLayout = await layout(mobile);
-  assert.equal(expandedMobileLayout.scrollWidth, expandedMobileLayout.clientWidth, "Expanded mobile Gooey Input overflows");
-  await mobile.screenshot({ path: resolve(outputDirectory, "mobile-gooey.png"), fullPage: true });
+  assert.equal(
+    (await mobile.locator(".project-layout").evaluate((element) => getComputedStyle(element).gridTemplateColumns)).split(" ").length,
+    1,
+    "Mobile project should use one column",
+  );
+  for (const selector of [".project-media", ".project-copy", ".focus-list", ".about-inner"]) {
+    await reveal(mobile, selector);
+  }
+  await mobile.screenshot({ path: resolve(outputDirectory, "mobile-full.png"), fullPage: true });
 
   const reduced = await browser.newPage({
     viewport: { width: 1280, height: 900 },
@@ -161,13 +136,17 @@ try {
   });
   installErrorCollection(reduced, consoleErrors, "reduced-motion");
   await reduced.goto(address, { waitUntil: "domcontentloaded" });
-  await reduced.locator(".hero-showcase").waitFor({ state: "visible" });
+  await reduced.locator(".project-media").waitFor({ state: "visible" });
   assert.equal(await reduced.locator(".video-preview").count(), 0, "Reduced motion should stop autoplay preview");
   assert.equal(await reduced.locator(".video-fallback").count(), 1);
-  await reveal(reduced, ".brief-section");
-  const reducedGooey = reduced.locator(".official-gooey-input");
-  await reducedGooey.getByRole("button").click();
-  assert.equal(await reducedGooey.getByRole("searchbox").isEnabled(), true);
+  const reducedPlayhead = reduced.locator('[data-motion="playhead"]');
+  const reducedStart = await leftPosition(reducedPlayhead);
+  await reduced.waitForTimeout(350);
+  const reducedEnd = await leftPosition(reducedPlayhead);
+  assert.ok(Math.abs(reducedEnd - reducedStart) <= 1, "Reduced motion should stop the playhead");
+  const reducedTrigger = reduced.locator("[data-video-trigger]");
+  await reducedTrigger.click();
+  assert.equal(await reduced.getByRole("dialog").count(), 1, "Video dialog should still work with reduced motion");
 
   assert.deepEqual(consoleErrors, [], `First-party console errors: ${consoleErrors.join(" | ")}`);
   await browser.close();
@@ -175,21 +154,20 @@ try {
   console.log(JSON.stringify({
     desktop: {
       layout: desktopLayout,
-      roborockProductHero: true,
+      directIntro: true,
+      singleRealProject: true,
       movingYouTubePreview: true,
-      simpleWatchButton: true,
-      aceternityCardSpotlight: true,
-      agencyGridHorizon: true,
-      officialAceternityGooeyInput: true,
+      movingPlayhead: true,
       videoDialogKeyboardAndEscape: true,
     },
     mobile: {
       layout: mobileLayout,
-      noOverflowAfterGooeyExpansion: true,
+      singleColumnWork: true,
     },
     reducedMotion: {
       autoplayStopped: true,
-      interactionsStillWork: true,
+      playheadStopped: true,
+      dialogStillWorks: true,
     },
     consoleErrors,
   }, null, 2));
