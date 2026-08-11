@@ -98,25 +98,29 @@ try {
   await page.screenshot({ path: resolve(outputDirectory, "desktop-agency-process.png") });
 
   await reveal(page, ".brief-section");
-  const gooey = page.locator(".gooey-input");
-  const gooeyRow = page.locator(".gooey-row");
+  const gooey = page.locator(".official-gooey-input");
+  const gooeyFilterWrap = gooey.locator(":scope > div");
+  const gooeyRow = gooeyFilterWrap.locator(":scope > div").first();
   const collapsedWidth = (await gooeyRow.boundingBox()).width;
-  await page.getByRole("button", { name: "Start a brief" }).click();
+  assert.ok(Math.abs(collapsedWidth - 115) <= 1, `Official collapsed width was ${collapsedWidth}px`);
+  const gooeyButton = gooey.getByRole("button");
+  await gooeyButton.click();
   await page.waitForTimeout(520);
-  assert.equal(await gooey.getAttribute("data-open"), "true");
-  const ideaInput = page.getByRole("textbox", { name: "Commission idea test" });
-  assert.equal(await ideaInput.evaluate((element) => document.activeElement === element), true);
+  const searchInput = gooey.getByRole("searchbox");
+  assert.equal(await searchInput.isEnabled(), true);
+  assert.equal(await searchInput.evaluate((element) => document.activeElement === element), true);
   const expandedWidth = (await gooeyRow.boundingBox()).width;
-  assert.ok(expandedWidth - collapsedWidth >= 150, "Gooey Input did not visibly expand");
-  const filterStyle = await page.locator(".gooey-filter-wrap").evaluate(
+  assert.ok(Math.abs(expandedWidth - 200) <= 1, `Official expanded width was ${expandedWidth}px`);
+  const expandedMargin = Number.parseFloat(await gooeyRow.evaluate((element) => getComputedStyle(element).marginLeft));
+  assert.ok(Math.abs(expandedMargin - 50) <= 1, `Official expanded offset was ${expandedMargin}px`);
+  const filterStyle = await gooeyFilterWrap.evaluate(
     (element) => getComputedStyle(element).filter,
   );
   assert.match(filterStyle, /url/);
-  assert.equal(await page.locator("feGaussianBlur").count(), 1, "Gooey SVG blur filter is missing");
-  await ideaInput.fill("A fast combat intro");
-  await page.getByRole("button", { name: "Test brief submission" }).click();
-  assert.match(await page.getByRole("status").innerText(), /nothing was sent/i);
-  await page.screenshot({ path: resolve(outputDirectory, "desktop-aceternity-gooey.png") });
+  assert.equal(await gooey.locator("feGaussianBlur").count(), 1, "Gooey SVG blur filter is missing");
+  assert.equal(await gooey.getByRole("button", { name: /send/i }).count(), 0, "Custom Send button still exists");
+  await searchInput.fill("Combat");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-official-aceternity-gooey.png") });
 
   await page.locator("#top").scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
@@ -145,7 +149,7 @@ try {
     "none",
   );
   await reveal(mobile, ".brief-section");
-  await mobile.getByRole("button", { name: "Start a brief" }).click();
+  await mobile.locator(".official-gooey-input").getByRole("button").click();
   await mobile.waitForTimeout(520);
   const expandedMobileLayout = await layout(mobile);
   assert.equal(expandedMobileLayout.scrollWidth, expandedMobileLayout.clientWidth, "Expanded mobile Gooey Input overflows");
@@ -161,8 +165,9 @@ try {
   assert.equal(await reduced.locator(".video-preview").count(), 0, "Reduced motion should stop autoplay preview");
   assert.equal(await reduced.locator(".video-fallback").count(), 1);
   await reveal(reduced, ".brief-section");
-  await reduced.getByRole("button", { name: "Start a brief" }).click();
-  assert.equal(await reduced.locator(".gooey-input").getAttribute("data-open"), "true");
+  const reducedGooey = reduced.locator(".official-gooey-input");
+  await reducedGooey.getByRole("button").click();
+  assert.equal(await reducedGooey.getByRole("searchbox").isEnabled(), true);
 
   assert.deepEqual(consoleErrors, [], `First-party console errors: ${consoleErrors.join(" | ")}`);
   await browser.close();
@@ -175,7 +180,7 @@ try {
       simpleWatchButton: true,
       aceternityCardSpotlight: true,
       agencyGridHorizon: true,
-      aceternityGooeyInput: true,
+      officialAceternityGooeyInput: true,
       videoDialogKeyboardAndEscape: true,
     },
     mobile: {

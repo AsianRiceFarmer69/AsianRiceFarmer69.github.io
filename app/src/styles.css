@@ -1,4 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
 
 :root {
   font-family: "Inter", Arial, sans-serif;
@@ -11,6 +18,10 @@
   --muted: #66686d;
   --line: #d9dada;
   --paper: #f4f4f2;
+  --background: #f4f4f2;
+  --foreground: #111214;
+  --border: #d9dada;
+  --ring: #e6002d;
 }
 
 * {
@@ -778,114 +789,6 @@ iframe {
   line-height: 1.6;
 }
 
-.gooey-input {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-}
-
-.gooey-filter-svg {
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.gooey-filter-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-}
-
-.gooey-row {
-  display: flex;
-  height: 52px;
-  align-items: center;
-  justify-content: center;
-}
-
-.gooey-surface {
-  width: 100%;
-  height: 52px;
-  color: #fff;
-  background: #111214;
-  border: 0;
-  border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(17, 18, 20, 0.15);
-}
-
-.gooey-trigger {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.gooey-trigger svg,
-.gooey-bubble svg {
-  width: 17px;
-  height: 17px;
-}
-
-.gooey-form {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 4px 5px 4px 18px;
-}
-
-.gooey-form input {
-  min-width: 0;
-  flex: 1;
-  color: #fff;
-  background: transparent;
-  border: 0;
-  outline: none;
-  font-size: 13px;
-}
-
-.gooey-form input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.gooey-form button {
-  height: 42px;
-  padding: 0 17px;
-  color: #fff;
-  background: var(--red);
-  border: 0;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.gooey-bubble {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  display: grid;
-  width: 44px;
-  height: 44px;
-  color: #fff;
-  background: #111214;
-  border: 0;
-  border-radius: 50%;
-  cursor: pointer;
-  place-items: center;
-  transform: translateY(-50%);
-  transform-origin: center;
-}
-
-.gooey-trigger:focus-visible,
-.gooey-form:focus-within,
-.gooey-bubble:focus-visible,
 .primary-button:focus-visible,
 .watch-button:focus-visible,
 .availability:focus-visible,

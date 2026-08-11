@@ -1,6 +1,7 @@
 # Third-party notices and design references
 
-This portfolio includes JavaScript adaptations of these public Aceternity UI components:
+This portfolio includes the official registry source for Aceternity UI's Gooey Input and
+a lightweight adaptation of its Card Spotlight:
 
 - Gooey Input: https://ui.aceternity.com/components/gooey-input
 - Gooey Input registry source: https://ui.aceternity.com/registry/gooey-input.json
@@ -8,9 +9,9 @@ This portfolio includes JavaScript adaptations of these public Aceternity UI com
 - Card Spotlight registry source: https://ui.aceternity.com/registry/card-spotlight.json
 - Aceternity UI licensing information: https://ui.aceternity.com/licence
 
-The adaptations preserve the interaction concepts while using this project's existing
-React, Motion, and plain-CSS setup. The Card Spotlight omits the original optional
-Three.js canvas layer to keep the static portfolio lightweight.
+The Gooey Input is installed with its original markup, Tailwind utility classes, behavior,
+and default dimensions. The Card Spotlight omits the original optional Three.js canvas
+layer to keep the static portfolio lightweight.
 
 The overall page was independently implemented using these visual references:
 
