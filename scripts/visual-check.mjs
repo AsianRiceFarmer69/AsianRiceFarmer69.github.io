@@ -50,19 +50,10 @@ try {
   assert.equal(desktopLayout.scrollWidth, desktopLayout.clientWidth, "Desktop has horizontal overflow");
   assert.ok(desktopLayout.height <= 1750, `Desktop page is too long at ${desktopLayout.height}px`);
   assert.equal(await desktop.locator(".hero").count(), 0, "The removed profile hero still renders");
-  assert.equal(await desktop.locator("footer a").count(), 0, "The removed source link still renders");
-  assert.match(await desktop.locator(".brand").innerText(), /Andrew Le/);
-  assert.equal(await desktop.locator(".ambient-wave path").count(), 12, "Red moving lines are missing");
-  assert.equal(
-    await desktop.locator(".ambient-wave path").first().evaluate((element) => getComputedStyle(element).stroke),
-    "rgb(230, 0, 45)",
-    "The accent color should be red",
-  );
-  const wave = desktop.locator('[data-motion="ambient-wave"]');
-  const waveStart = (await wave.boundingBox()).x;
-  await desktop.waitForTimeout(700);
-  const waveEnd = (await wave.boundingBox()).x;
-  assert.ok(Math.abs(waveEnd - waveStart) >= 4, "The red line animation is not visibly moving");
+  assert.equal(await desktop.locator("footer").count(), 0, "The removed footer still renders");
+  assert.equal(await desktop.locator(".ambient-wave").count(), 0, "The removed squiggly line still renders");
+  assert.match(await desktop.locator(".brand").innerText(), /ARF_0503/);
+  assert.match(await desktop.locator(".brand").innerText(), /Roblox Animator \/ Since 2023/i);
   assert.equal(await desktop.locator(".expertise-grid article").count(), 3, "Expected three compact expertise items");
   assert.equal(await desktop.locator(".project-card").count(), 4, "Expected four clips in one project grid");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
@@ -103,11 +94,6 @@ try {
   const reduced = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   collectErrors(reduced, errors, "reduced-motion");
   await reduced.goto(address, { waitUntil: "domcontentloaded" });
-  const reducedWave = reduced.locator('[data-motion="ambient-wave"]');
-  const reducedWaveStart = (await reducedWave.boundingBox()).x;
-  await reduced.waitForTimeout(350);
-  const reducedWaveEnd = (await reducedWave.boundingBox()).x;
-  assert.ok(Math.abs(reducedWaveEnd - reducedWaveStart) <= 1, "Reduced motion should stop the moving lines");
   const reducedTrigger = reduced.locator("[data-video-trigger]").last();
   await reducedTrigger.click();
   assert.match(await reduced.locator(".dialog-video iframe").getAttribute("src"), /nGm_EFrSYK8/);
@@ -116,7 +102,7 @@ try {
   await browser.close();
 
   console.log(JSON.stringify({
-    desktop: { layout: desktopLayout, compact: true, redMovingLines: true, expertiseItems: 3, projectClips: 4 },
+    desktop: { layout: desktopLayout, compact: true, squigglyLineRemoved: true, expertiseItems: 3, projectClips: 4 },
     mobile: { layout: mobileLayout, singleColumnProjects: true },
     dialog: { keyboardAndEscape: true, selectedClipLoads: true, focusReturns: true },
     consoleErrors: errors,

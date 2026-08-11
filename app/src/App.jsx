@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Clapperboard, MessageCircle, Play, Sparkles, X } from "lucide-react";
-import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
 const PROJECT_VIDEOS = [
@@ -34,9 +33,10 @@ const expertise = [
 function Header() {
   return (
     <header className="site-header">
-      <a className="brand" href="#top" aria-label="Andrew Le, back to top">
-        <span>AL</span>
-        <strong>Andrew Le</strong>
+      <a className="brand" href="#top" aria-label="ARF_0503, Roblox Animator, back to top">
+        <span>ARF</span>
+        <strong>ARF_0503</strong>
+        <small>/ Roblox Animator / Since 2023</small>
       </a>
       <nav aria-label="Main navigation">
         <a href="#expertise">Skills</a>
@@ -46,32 +46,9 @@ function Header() {
   );
 }
 
-function MovingLines({ reduceMotion }) {
-  return (
-    <motion.svg
-      className="ambient-wave"
-      data-motion="ambient-wave"
-      viewBox="0 0 900 240"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      animate={reduceMotion ? { x: 0 } : { x: ["-5%", "5%", "-5%"] }}
-      transition={reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
-    >
-      {Array.from({ length: 12 }, (_, index) => (
-        <path
-          d="M-80 180C90 65 220 225 390 120S665 40 980 150"
-          key={index}
-          transform={`translate(0 ${index * 5})`}
-        />
-      ))}
-    </motion.svg>
-  );
-}
-
-function Expertise({ reduceMotion }) {
+function Expertise() {
   return (
     <section className="expertise-section" id="expertise">
-      <MovingLines reduceMotion={reduceMotion} />
       <div className="section-heading">
         <p>Expertise</p>
         <h2>What I do</h2>
@@ -175,22 +152,15 @@ function Work() {
 }
 
 function App() {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <MotionConfig reducedMotion="user">
-      <div className="site-canvas" id="top">
-        <a className="skip-link" href="#work">Skip to work</a>
-        <Header />
-        <main>
-          <Expertise reduceMotion={reduceMotion} />
-          <Work />
-        </main>
-        <footer>
-          <p>Andrew Le / Roblox Animator / Since 2023</p>
-        </footer>
-      </div>
-    </MotionConfig>
+    <div className="site-canvas" id="top">
+      <a className="skip-link" href="#work">Skip to work</a>
+      <Header />
+      <main>
+        <Expertise />
+        <Work />
+      </main>
+    </div>
   );
 }
 
