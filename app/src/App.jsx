@@ -1,76 +1,334 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 import {
   ArrowRight,
+  ChevronDown,
+  Clapperboard,
   Code2,
   ExternalLink,
+  Film,
+  Layers3,
+  Moon,
   Play,
+  Sparkles,
+  Sun,
+  WandSparkles,
   X,
 } from "lucide-react";
-import { MotionConfig, motion, useReducedMotion } from "motion/react";
-import AnimatedButton from "./components/ui/AnimatedButton";
-import HighlightGrid from "./components/ui/HighlightGrid";
-import StaggerText from "./components/ui/StaggerText";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
 
-const overviewTabs = [
-  { value: "services", label: "What I do" },
-  { value: "workflow", label: "Workflow" },
+const VIDEO_ID = "Xc6p7WxNs8Q";
+
+const navigation = [
+  { value: "work", label: "Work" },
+  { value: "process", label: "Process" },
   { value: "about", label: "About" },
 ];
 
 const services = [
   {
-    number: "01",
-    label: "Combat",
-    color: "#e94439",
-    copy: "Attacks, reactions, and choreography that stay clear and readable.",
+    icon: Clapperboard,
+    title: "Combat",
+    copy: "Readable attacks, reactions, timing, and choreography.",
   },
   {
-    number: "02",
-    label: "Cinematics",
-    color: "#ef6b47",
-    copy: "Camera-led moments shaped around story, tension, and impact.",
+    icon: Film,
+    title: "Cinematics",
+    copy: "Camera-led sequences built around story and impact.",
   },
   {
-    number: "03",
-    label: "Commissions",
-    color: "#c7322a",
-    copy: "Animation built around your brief, references, and feedback.",
+    icon: Layers3,
+    title: "Commissions",
+    copy: "Animation shaped around your brief, references, and notes.",
   },
 ];
 
-function VideoDialog() {
+const processSteps = [
+  {
+    number: "01",
+    title: "Listen",
+    summary: "Your idea comes first.",
+    detail:
+      "I start with the action, mood, references, and constraints so I understand the version you already have in your head.",
+  },
+  {
+    number: "02",
+    title: "Animate",
+    summary: "Build the motion clearly.",
+    detail:
+      "I block the important poses and timing in Moon Animator, then shape the movement so every beat reads inside Roblox.",
+  },
+  {
+    number: "03",
+    title: "Polish",
+    summary: "Refine through feedback.",
+    detail:
+      "I respond to notes, tighten the performance, and keep learning Blender to bring more control and polish into future work.",
+  },
+];
+
+function MotionAvatar({ reduceMotion }) {
+  const loop = reduceMotion ? undefined : { repeat: Infinity, ease: "easeInOut" };
+
+  return (
+    <div className="motion-avatar" role="img" aria-label="Animated Roblox-style character rig">
+      <span className="avatar-orbit avatar-orbit-one" aria-hidden="true" />
+      <span className="avatar-orbit avatar-orbit-two" aria-hidden="true" />
+      <svg className="avatar-rig" viewBox="0 0 180 180" aria-hidden="true">
+        <motion.g
+          className="rig-group"
+          data-motion="avatar"
+          animate={reduceMotion ? undefined : { y: [2, -5, 2], rotate: [-1.5, 1.5, -1.5] }}
+          transition={{ duration: 2.4, ...loop }}
+          style={{ transformOrigin: "90px 96px" }}
+        >
+          <motion.rect
+            className="rig-limb rig-arm-left"
+            x="34"
+            y="77"
+            width="38"
+            height="15"
+            rx="7"
+            animate={reduceMotion ? undefined : { rotate: [20, -24, 20] }}
+            transition={{ duration: 1.2, ...loop }}
+            style={{ transformBox: "fill-box", transformOrigin: "100% 50%" }}
+          />
+          <motion.rect
+            className="rig-limb rig-arm-right"
+            x="108"
+            y="77"
+            width="38"
+            height="15"
+            rx="7"
+            animate={reduceMotion ? undefined : { rotate: [-20, 24, -20] }}
+            transition={{ duration: 1.2, ...loop }}
+            style={{ transformBox: "fill-box", transformOrigin: "0% 50%" }}
+          />
+          <motion.rect
+            className="rig-limb rig-leg-left"
+            x="66"
+            y="111"
+            width="18"
+            height="42"
+            rx="8"
+            animate={reduceMotion ? undefined : { rotate: [-8, 10, -8] }}
+            transition={{ duration: 1.2, ...loop }}
+            style={{ transformBox: "fill-box", transformOrigin: "50% 0%" }}
+          />
+          <motion.rect
+            className="rig-limb rig-leg-right"
+            x="96"
+            y="111"
+            width="18"
+            height="42"
+            rx="8"
+            animate={reduceMotion ? undefined : { rotate: [10, -8, 10] }}
+            transition={{ duration: 1.2, ...loop }}
+            style={{ transformBox: "fill-box", transformOrigin: "50% 0%" }}
+          />
+          <rect className="rig-body" x="65" y="69" width="50" height="53" rx="11" />
+          <motion.circle
+            className="rig-head"
+            cx="90"
+            cy="48"
+            r="20"
+            animate={reduceMotion ? undefined : { scale: [1, 1.06, 1] }}
+            transition={{ duration: 1.2, ...loop }}
+            style={{ transformOrigin: "90px 48px" }}
+          />
+          <path className="rig-face" d="M82 49h16M90 41v16" />
+        </motion.g>
+      </svg>
+      <span className="avatar-frame">FRAME 024</span>
+      <span className="avatar-playhead" data-motion="playhead" aria-hidden="true" />
+    </div>
+  );
+}
+
+function ProfileSidebar({ reduceMotion }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  return (
+    <aside
+      className="profile-card"
+      data-sidebar
+      data-details-open={detailsOpen ? "true" : "false"}
+    >
+      <div className="profile-summary">
+        <MotionAvatar reduceMotion={reduceMotion} />
+        <div className="profile-title">
+          <p className="profile-kicker">Roblox animation</p>
+          <h1>Andrew Le</h1>
+          <span>Roblox Animator</span>
+        </div>
+      </div>
+
+      <button
+        className="details-toggle"
+        data-sidebar-toggle
+        type="button"
+        aria-expanded={detailsOpen}
+        aria-controls="profile-details"
+        onClick={() => setDetailsOpen((open) => !open)}
+      >
+        <span>{detailsOpen ? "Hide details" : "Show details"}</span>
+        <motion.span animate={{ rotate: detailsOpen ? 180 : 0 }}>
+          <ChevronDown size={16} />
+        </motion.span>
+      </button>
+
+      <div
+        className="profile-details-wrap"
+        data-sidebar-details
+        data-open={detailsOpen ? "true" : "false"}
+      >
+        <div className="profile-details" id="profile-details">
+          <div className="profile-divider" />
+          <dl className="profile-facts">
+            <div>
+              <dt>Focus</dt>
+              <dd>Combat &amp; cinematics</dd>
+            </div>
+            <div>
+              <dt>Experience</dt>
+              <dd>Commissions since 2023</dd>
+            </div>
+            <div>
+              <dt>Tools</dt>
+              <dd>Moon Animator + Blender</dd>
+            </div>
+          </dl>
+
+          <div className="profile-status">
+            <span className="status-pulse" aria-hidden="true" />
+            Building better motion, one frame at a time.
+          </div>
+
+          <a
+            className="source-link"
+            href="https://github.com/AsianRiceFarmer69/AsianRiceFarmer69.github.io"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Code2 size={15} /> View source <ExternalLink size={13} />
+          </a>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function TiltShowcase({ children, reduceMotion }) {
+  const cardRef = useRef(null);
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const springX = useSpring(rotateX, { stiffness: 260, damping: 24 });
+  const springY = useSpring(rotateY, { stiffness: 260, damping: 24 });
+
+  function handlePointerMove(event) {
+    if (reduceMotion || event.pointerType === "touch") return;
+    const bounds = cardRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    const horizontal = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const vertical = (event.clientY - bounds.top) / bounds.height - 0.5;
+    rotateY.set(horizontal * 8);
+    rotateX.set(vertical * -6);
+  }
+
+  function resetTilt() {
+    rotateX.set(0);
+    rotateY.set(0);
+  }
+
+  return (
+    <motion.article
+      ref={cardRef}
+      className="showcase-card"
+      data-testid="tilt-showcase"
+      data-interactive="project-card"
+      style={{ rotateX: springX, rotateY: springY, transformPerspective: 1100 }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
+      whileHover={reduceMotion ? undefined : { y: -6 }}
+      transition={{ type: "spring", stiffness: 300, damping: 24 }}
+    >
+      {children}
+    </motion.article>
+  );
+}
+
+function VideoShowcase({ reduceMotion }) {
+  const previewUrl = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&rel=0&playsinline=1`;
+
   return (
     <Dialog.Root>
-      <div className="project-poster">
-        <img
-          src="https://i.ytimg.com/vi/Xc6p7WxNs8Q/maxresdefault.jpg"
-          alt="Combat Encounter Animation Project in Roblox Studio"
-        />
-        <span className="poster-overlay" />
-        <span className="poster-label">Featured work</span>
-        <Dialog.Trigger asChild>
-          <AnimatedButton
-            className="showcase-button"
-            type="button"
-            aria-label="Play Combat Encounter Animation Project"
+      <TiltShowcase reduceMotion={reduceMotion}>
+        <div className="video-stage">
+          <img
+            className="video-fallback"
+            src={`https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg`}
+            alt="Combat Encounter Animation Project in Roblox Studio"
+          />
+          {!reduceMotion && (
+            <iframe
+              className="video-preview"
+              src={previewUrl}
+              title="Muted moving preview of the Combat Encounter Animation Project"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              loading="eager"
+              tabIndex="-1"
+            />
+          )}
+          <span className="video-vignette" aria-hidden="true" />
+          <span className="moving-badge">
+            <span aria-hidden="true" /> Moving preview
+          </span>
+          <Dialog.Trigger asChild>
+            <motion.button
+              className="watch-button"
+              data-video-trigger
+              type="button"
+              whileHover={reduceMotion ? undefined : { scale: 1.04 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+              aria-label="Watch Combat Encounter Animation Project with sound"
+            >
+              <span className="watch-icon"><Play size={18} fill="currentColor" /></span>
+              Watch with sound
+            </motion.button>
+          </Dialog.Trigger>
+        </div>
+
+        <div className="showcase-caption">
+          <div>
+            <p>Roblox Studio / Combat animation</p>
+            <h3>Combat Encounter Animation Project</h3>
+          </div>
+          <a
+            href={`https://youtu.be/${VIDEO_ID}`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open the project on YouTube"
           >
-            <span className="play-icon" aria-hidden="true">
-              <Play size={18} fill="currentColor" />
-            </span>
-            <span>Play showcase</span>
-          </AnimatedButton>
-        </Dialog.Trigger>
-      </div>
+            <ExternalLink size={18} />
+          </a>
+        </div>
+      </TiltShowcase>
 
       <Dialog.Portal>
         <Dialog.Overlay className="dialog-overlay" />
         <Dialog.Content className="dialog-content">
-          <div className="dialog-header">
+          <div className="dialog-heading">
             <div>
               <Dialog.Title>Combat Encounter Animation Project</Dialog.Title>
-              <Dialog.Description>Roblox Studio combat animation showcase</Dialog.Description>
+              <Dialog.Description>Roblox Studio animation showcase</Dialog.Description>
             </div>
             <Dialog.Close className="dialog-close" aria-label="Close video">
               <X size={20} />
@@ -78,7 +336,7 @@ function VideoDialog() {
           </div>
           <div className="dialog-video">
             <iframe
-              src="https://www.youtube-nocookie.com/embed/Xc6p7WxNs8Q?autoplay=1&rel=0"
+              src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0`}
               title="Combat Encounter Animation Project: Roblox Studio showcase"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -91,194 +349,334 @@ function VideoDialog() {
   );
 }
 
-function ServicesPanel() {
-  return <HighlightGrid items={services} />;
-}
-
-function WorkflowPanel() {
+function PanelHeading({ eyebrow, title, id, children }) {
   return (
-    <div className="workflow-grid">
-      <article className="workflow-step">
-        <p>Foundation · Since 2023</p>
-        <h3>Moon Animator</h3>
-        <span>My main workflow for Roblox commission animation.</span>
-      </article>
-      <ArrowRight className="workflow-arrow" size={24} aria-hidden="true" />
-      <article className="workflow-step workflow-current">
-        <p>Learning now</p>
-        <h3>Blender</h3>
-        <span>My next step toward more control and polish.</span>
-      </article>
-    </div>
+    <header className="panel-heading">
+      <p>{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+      <span className="heading-line" aria-hidden="true" />
+      {children && <div className="panel-lead">{children}</div>}
+    </header>
   );
 }
 
-function AboutPanel() {
+function WorkPanel({ reduceMotion }) {
   return (
-    <div className="about-panel">
-      <p className="about-statement">
-        I am not the best at building portfolios. I care more about understanding
-        what you need and turning the version in your head into animation that feels alive.
-      </p>
-      <p className="about-note">
-        I bring patience, communication, and consistent effort to every commission.
-      </p>
-    </div>
-  );
-}
-
-function Overview() {
-  const [activeTab, setActiveTab] = useState("services");
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <Tabs.Root
-      className="overview"
-      value={activeTab}
-      onValueChange={setActiveTab}
-      aria-label="Portfolio overview"
+    <motion.section
+      className="panel work-panel"
+      aria-labelledby="work-heading"
+      initial={reduceMotion ? false : { opacity: 0, x: 34 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, x: -24 }}
+      transition={{ duration: 0.34, ease: [0.2, 0.75, 0.25, 1] }}
     >
-      <div className="overview-heading">
-        <p>Quick overview</p>
-        <Tabs.List className="tab-list" aria-label="Portfolio details">
-          {overviewTabs.map((tab) => (
-            <Tabs.Trigger className="tab-trigger" value={tab.value} key={tab.value}>
-              {tab.label}
-              {activeTab === tab.value && (
-                <motion.span
-                  className="tab-indicator"
-                  layoutId="active-overview-tab"
-                  transition={{ type: "spring", stiffness: 500, damping: 38 }}
-                />
-              )}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
+      <PanelHeading eyebrow="Selected work" title="Roblox Animation" id="work-heading">
+        <p>
+          I animate readable combat and cinematic sequences for Roblox projects.
+        </p>
+      </PanelHeading>
+
+      <VideoShowcase reduceMotion={reduceMotion} />
+
+      <div className="kinetic-strip" aria-hidden="true">
+        <motion.div
+          className="kinetic-track"
+          animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+        >
+          <span>COMBAT ANIMATION&nbsp; / &nbsp;CINEMATICS&nbsp; / &nbsp;ROBLOX COMMISSIONS&nbsp; / &nbsp;</span>
+          <span>COMBAT ANIMATION&nbsp; / &nbsp;CINEMATICS&nbsp; / &nbsp;ROBLOX COMMISSIONS&nbsp; / &nbsp;</span>
+        </motion.div>
       </div>
 
-      <Tabs.Content className="tab-content" value="services">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+      <div className="service-grid">
+        {services.map(({ icon: Icon, title, copy }, index) => (
+          <motion.article
+            className="service-card"
+            key={title}
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 + index * 0.07 }}
+            whileHover={reduceMotion ? undefined : { y: -8, rotate: index === 1 ? 0.7 : -0.7 }}
+          >
+            <span className="service-icon"><Icon size={20} /></span>
+            <div>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </div>
+            <ArrowRight className="service-arrow" size={17} aria-hidden="true" />
+          </motion.article>
+        ))}
+      </div>
+    </motion.section>
+  );
+}
+
+function ProcessPanel({ reduceMotion }) {
+  const [activeStep, setActiveStep] = useState(0);
+  const selected = processSteps[activeStep];
+
+  return (
+    <motion.section
+      className="panel process-panel"
+      aria-labelledby="process-heading"
+      initial={reduceMotion ? false : { opacity: 0, x: 34 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, x: -24 }}
+      transition={{ duration: 0.34, ease: [0.2, 0.75, 0.25, 1] }}
+    >
+      <PanelHeading eyebrow="From idea to impact" title="My Process" id="process-heading">
+        <p>Click a step to see how I approach a commission.</p>
+      </PanelHeading>
+
+      <div className="process-layout">
+        <div className="process-list" aria-label="Animation process steps">
+          {processSteps.map((step, index) => (
+            <button
+              type="button"
+              className="process-step"
+              data-active={activeStep === index ? "true" : "false"}
+              onClick={() => setActiveStep(index)}
+              key={step.number}
+            >
+              <span>{step.number}</span>
+              <div>
+                <strong>{step.title}</strong>
+                <small>{step.summary}</small>
+              </div>
+              <ArrowRight size={17} />
+            </button>
+          ))}
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.article
+            className="process-detail"
+            key={selected.number}
+            initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -12, scale: 0.985 }}
+            transition={{ duration: 0.24 }}
+          >
+            <span className="detail-number">{selected.number}</span>
+            <WandSparkles size={30} aria-hidden="true" />
+            <h3>{selected.title}</h3>
+            <p>{selected.detail}</p>
+          </motion.article>
+        </AnimatePresence>
+      </div>
+
+      <div className="tool-path">
+        <div>
+          <span>Foundation / since 2023</span>
+          <strong>Moon Animator</strong>
+        </div>
+        <div className="tool-path-line" aria-hidden="true">
+          <motion.span
+            initial={reduceMotion ? false : { scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.1, delay: 0.2 }}
+          />
+          <ArrowRight size={18} />
+        </div>
+        <div>
+          <span>Learning now</span>
+          <strong>Blender</strong>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function AboutPanel({ reduceMotion }) {
+  return (
+    <motion.section
+      className="panel about-panel"
+      aria-labelledby="about-heading"
+      initial={reduceMotion ? false : { opacity: 0, x: 34 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, x: -24 }}
+      transition={{ duration: 0.34, ease: [0.2, 0.75, 0.25, 1] }}
+    >
+      <PanelHeading eyebrow="The animator behind the work" title="About Me" id="about-heading" />
+
+      <div className="about-layout">
+        <motion.blockquote
+          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28 }}
+          transition={{ delay: 0.08 }}
         >
-          <ServicesPanel />
-        </motion.div>
-      </Tabs.Content>
-      <Tabs.Content className="tab-content" value="workflow">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28 }}
-        >
-          <WorkflowPanel />
-        </motion.div>
-      </Tabs.Content>
-      <Tabs.Content className="tab-content" value="about">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28 }}
-        >
-          <AboutPanel />
-        </motion.div>
-      </Tabs.Content>
-    </Tabs.Root>
+          “I care more about understanding what you need and turning the version in your
+          head into animation that feels alive.”
+        </motion.blockquote>
+        <div className="about-copy">
+          <p>
+            I have completed Roblox animation commissions with Moon Animator since 2023.
+            I focus on clear action, purposeful timing, and communication throughout the work.
+          </p>
+          <p>
+            I am now learning Blender so I can push my control and polish further. I may still
+            be learning how to present the work, but I take the work itself seriously.
+          </p>
+        </div>
+      </div>
+
+      <div className="principles">
+        {["Listen carefully", "Communicate clearly", "Polish the motion"].map((item, index) => (
+          <motion.div
+            key={item}
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 + index * 0.08 }}
+            whileHover={reduceMotion ? undefined : { y: -7 }}
+          >
+            <span>0{index + 1}</span>
+            <strong>{item}</strong>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
+  );
+}
+
+function PortfolioNav({ activeTab, theme, onThemeChange }) {
+  return (
+    <nav className="portfolio-nav" aria-label="Portfolio sections">
+      <Tabs.List className="tab-list">
+        {navigation.map((item) => (
+          <Tabs.Trigger className="tab-trigger" value={item.value} key={item.value}>
+            {item.label}
+            {activeTab === item.value && (
+              <motion.span
+                className="tab-active"
+                layoutId="active-navigation"
+                transition={{ type: "spring", stiffness: 430, damping: 34 }}
+              />
+            )}
+          </Tabs.Trigger>
+        ))}
+      </Tabs.List>
+      <span className="nav-divider" aria-hidden="true" />
+      <motion.button
+        className="theme-toggle"
+        type="button"
+        whileTap={{ rotate: 22, scale: 0.9 }}
+        onClick={onThemeChange}
+        aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={theme}
+            initial={{ opacity: 0, rotate: -70, scale: 0.6 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 70, scale: 0.6 }}
+            transition={{ duration: 0.18 }}
+          >
+            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+          </motion.span>
+        </AnimatePresence>
+      </motion.button>
+    </nav>
   );
 }
 
 function App() {
   const reduceMotion = useReducedMotion();
+  const [activeTab, setActiveTab] = useState("work");
+  const [theme, setTheme] = useState(() => {
+    try {
+      return window.localStorage.getItem("andrew-portfolio-theme") || "dark";
+    } catch {
+      return "dark";
+    }
+  });
+  const [cursorVisible, setCursorVisible] = useState(false);
+  const cursorX = useMotionValue(-300);
+  const cursorY = useMotionValue(-300);
+  const cursorSpringX = useSpring(cursorX, { stiffness: 180, damping: 26, mass: 0.45 });
+  const cursorSpringY = useSpring(cursorY, { stiffness: 180, damping: 26, mass: 0.45 });
+
+  useEffect(() => {
+    document.documentElement.style.colorScheme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+      "content",
+      theme === "dark" ? "#101011" : "#ebe7dd",
+    );
+    try {
+      window.localStorage.setItem("andrew-portfolio-theme", theme);
+    } catch {
+      // The theme still works if storage is unavailable.
+    }
+  }, [theme]);
+
+  function handlePointerMove(event) {
+    if (reduceMotion || event.pointerType === "touch") return;
+    cursorX.set(event.clientX - 115);
+    cursorY.set(event.clientY - 115);
+    setCursorVisible(true);
+  }
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="site-shell" id="top">
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
+      <div
+        className="site-canvas"
+        data-theme={theme}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => setCursorVisible(false)}
+      >
+        <a className="skip-link" href="#portfolio-content">Skip to portfolio</a>
+        <div className="ambient ambient-one" aria-hidden="true" />
+        <div className="ambient ambient-two" aria-hidden="true" />
+        {!reduceMotion && (
+          <motion.div
+            className="cursor-aura"
+            data-testid="cursor-aura"
+            style={{ x: cursorSpringX, y: cursorSpringY }}
+            animate={{ opacity: cursorVisible ? 1 : 0 }}
+            aria-hidden="true"
+          />
+        )}
 
-        <header className="site-header">
-          <a className="brand" href="#top" aria-label="Andrew Le portfolio home">
-            <strong>Andrew Le</strong>
-            <span>Roblox Animator</span>
-          </a>
-          <p className="header-meta">
-            <span aria-hidden="true" />
-            Animating since 2023
-          </p>
-        </header>
+        <div className="portfolio-shell">
+          <ProfileSidebar reduceMotion={reduceMotion} />
 
-        <motion.main
-          id="main-content"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.45 }}
-        >
-          <section className="intro-project" aria-labelledby="hero-title">
-            <motion.div
-              className="intro-copy"
-              initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.2, 0.75, 0.25, 1] }}
-            >
-              <p className="eyebrow">Roblox animation commissions</p>
-              <h1 id="hero-title">
-                <StaggerText delay={0.03}>Combat and cinematics,</StaggerText>
-                <span className="accent-line">
-                  <StaggerText delay={0.16}>made for Roblox.</StaggerText>
-                </span>
-              </h1>
-              <p className="intro-lead">
-                I animate readable fight sequences and cinematic moments for Roblox projects.
-              </p>
-              <p className="experience-note">
-                Moon Animator has been my commission foundation since 2023. I am now
-                learning Blender for more control and polish.
-              </p>
-            </motion.div>
-
-            <motion.article
-              className="project-card"
-              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.08, ease: [0.2, 0.75, 0.25, 1] }}
-              aria-labelledby="project-title"
-            >
-              <VideoDialog />
-              <div className="project-caption">
-                <div>
-                  <p>Roblox Studio · Combat animation</p>
-                  <h2 id="project-title">Combat Encounter Animation Project</h2>
-                </div>
-                <a
-                  className="youtube-link"
-                  href="https://youtu.be/Xc6p7WxNs8Q"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Watch Combat Encounter Animation Project on YouTube"
-                >
-                  <ExternalLink size={18} />
-                </a>
-                <p className="project-description">
-                  A showcase built around readable action, purposeful timing, and impact.
-                </p>
-              </div>
-            </motion.article>
-          </section>
-
-          <Overview />
-        </motion.main>
-
-        <footer className="site-footer">
-          <p>© {new Date().getFullYear()} Andrew Le</p>
-          <a
-            href="https://github.com/AsianRiceFarmer69/AsianRiceFarmer69.github.io"
-            target="_blank"
-            rel="noreferrer"
+          <Tabs.Root
+            className="content-card"
+            value={activeTab}
+            onValueChange={setActiveTab}
+            id="portfolio-content"
           >
-            <Code2 size={16} /> View source
-          </a>
-        </footer>
+            <PortfolioNav
+              activeTab={activeTab}
+              theme={theme}
+              onThemeChange={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+            />
+
+            <div className="content-inner">
+              <AnimatePresence mode="wait" initial={false}>
+                {activeTab === "work" && (
+                  <Tabs.Content className="tab-content" value="work" forceMount key="work">
+                    <WorkPanel reduceMotion={reduceMotion} />
+                  </Tabs.Content>
+                )}
+                {activeTab === "process" && (
+                  <Tabs.Content className="tab-content" value="process" forceMount key="process">
+                    <ProcessPanel reduceMotion={reduceMotion} />
+                  </Tabs.Content>
+                )}
+                {activeTab === "about" && (
+                  <Tabs.Content className="tab-content" value="about" forceMount key="about">
+                    <AboutPanel reduceMotion={reduceMotion} />
+                  </Tabs.Content>
+                )}
+              </AnimatePresence>
+            </div>
+          </Tabs.Root>
+        </div>
+
+        <p className="site-credit">
+          <Sparkles size={13} aria-hidden="true" /> Andrew Le / Roblox Animator
+        </p>
       </div>
     </MotionConfig>
   );

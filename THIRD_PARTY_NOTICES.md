@@ -1,16 +1,13 @@
 # Third-party notices
 
-This project includes adapted source from VengeanceUI:
+This portfolio adapts the responsive vCard layout structure from:
 
-- Animated Button
-- Stagger Text
-- Highlight Grid
-
-Source: https://github.com/Ashutoshx7/VengeanceUI
+- Source: https://github.com/codewithsadee/vcard-personal-portfolio
+- License: MIT
 
 MIT License
 
-Copyright (c) 2025-2026 Ashutoshx7
+Copyright (c) 2022 codewithsadee
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
