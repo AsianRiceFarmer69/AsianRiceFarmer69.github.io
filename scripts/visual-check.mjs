@@ -55,7 +55,10 @@ try {
   assert.match(await desktop.locator(".brand").innerText(), /ARF_0503/);
   assert.match(await desktop.locator(".brand").innerText(), /Roblox Animator \/ Since 2023/i);
   assert.equal(await desktop.locator(".site-header nav").count(), 0, "The removed header navigation still renders");
-  assert.equal(await desktop.locator(".expertise-grid article").count(), 3, "Expected three compact expertise items");
+  assert.equal(await desktop.locator(".expertise-grid").count(), 0, "The removed expertise claims still render");
+  assert.equal(await desktop.getByText("Combat animation", { exact: true }).count(), 0);
+  assert.equal(await desktop.getByText("Cinematic sequences", { exact: true }).count(), 0);
+  assert.match(await desktop.locator(".workflow-copy").innerText(), /Moon Animator.*learning Blender/i);
   assert.equal(await desktop.locator(".project-card").count(), 4, "Expected four clips in one project grid");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
   for (const id of videoIds) {
@@ -78,7 +81,7 @@ try {
   collectErrors(mobile, errors, "mobile");
   await mobile.goto(address, { waitUntil: "domcontentloaded" });
   await mobile.locator(".project-card").first().waitFor({ state: "visible" });
-  for (const selector of [".expertise-grid", ".project-grid"]) {
+  for (const selector of [".workflow-copy", ".project-grid"]) {
     await mobile.locator(selector).scrollIntoViewIfNeeded();
     await mobile.waitForTimeout(450);
   }
@@ -103,7 +106,7 @@ try {
   await browser.close();
 
   console.log(JSON.stringify({
-    desktop: { layout: desktopLayout, compact: true, squigglyLineRemoved: true, expertiseItems: 3, projectClips: 4 },
+    desktop: { layout: desktopLayout, compact: true, truthfulWorkflowOnly: true, projectClips: 4 },
     mobile: { layout: mobileLayout, singleColumnProjects: true },
     dialog: { keyboardAndEscape: true, selectedClipLoads: true, focusReturns: true },
     consoleErrors: errors,

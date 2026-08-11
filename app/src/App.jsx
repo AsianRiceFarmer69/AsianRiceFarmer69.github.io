@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Clapperboard, MessageCircle, Play, Sparkles, X } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { useState } from "react";
 
 const PROJECT_VIDEOS = [
@@ -7,27 +7,6 @@ const PROJECT_VIDEOS = [
   { id: "EIzCjA4LbQU", label: "Combat clip 02" },
   { id: "fGbMmU9d6NM", label: "Combat clip 03" },
   { id: "nGm_EFrSYK8", label: "Combat clip 04" },
-];
-
-const expertise = [
-  {
-    icon: Sparkles,
-    title: "Combat animation",
-    copy: "Readable poses, purposeful timing, and impact that makes each hit easy to follow.",
-    tags: ["Combat", "Timing", "Choreography"],
-  },
-  {
-    icon: Clapperboard,
-    title: "Cinematic sequences",
-    copy: "Camera movement and pacing shaped around the story and feeling of the scene.",
-    tags: ["Cinematics", "Camera", "Roblox"],
-  },
-  {
-    icon: MessageCircle,
-    title: "Commission workflow",
-    copy: "Moon Animator is my foundation, and I am learning Blender for more control and polish.",
-    tags: ["Moon Animator", "Blender", "Feedback"],
-  },
 ];
 
 function Header() {
@@ -46,22 +25,10 @@ function Expertise() {
   return (
     <section className="expertise-section" id="expertise">
       <div className="section-heading">
-        <p>Expertise</p>
-        <h2>What I do</h2>
+        <p>About</p>
+        <h2>Commission workflow</h2>
       </div>
-
-      <div className="expertise-grid">
-        {expertise.map(({ icon: Icon, title, copy, tags }) => (
-          <article key={title}>
-            <Icon size={23} strokeWidth={1.7} />
-            <h3>{title}</h3>
-            <p>{copy}</p>
-            <ul aria-label={`${title} skills`}>
-              {tags.map((tag) => <li key={tag}>{tag}</li>)}
-            </ul>
-          </article>
-        ))}
-      </div>
+      <p className="workflow-copy">I use Moon Animator for commissions and I am learning Blender.</p>
     </section>
   );
 }
