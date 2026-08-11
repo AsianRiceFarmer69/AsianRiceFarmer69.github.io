@@ -24,6 +24,7 @@ import {
   useReducedMotion,
   useSpring,
 } from "motion/react";
+import RadialGlowButton from "./components/ui/RadialGlowButton";
 
 const VIDEO_ID = "Xc6p7WxNs8Q";
 
@@ -292,17 +293,15 @@ function VideoShowcase({ reduceMotion }) {
             <span aria-hidden="true" /> Moving preview
           </span>
           <Dialog.Trigger asChild>
-            <motion.button
+            <RadialGlowButton
               className="watch-button"
               data-video-trigger
               type="button"
-              whileHover={reduceMotion ? undefined : { scale: 1.04 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.96 }}
               aria-label="Watch Combat Encounter Animation Project with sound"
             >
               <span className="watch-icon"><Play size={18} fill="currentColor" /></span>
               Watch with sound
-            </motion.button>
+            </RadialGlowButton>
           </Dialog.Trigger>
         </div>
 

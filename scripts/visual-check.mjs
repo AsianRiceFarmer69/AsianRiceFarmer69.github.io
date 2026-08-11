@@ -79,6 +79,23 @@ try {
   assert.match(previewSource, /mute=1/);
   assert.match(previewSource, /loop=1/);
 
+  const vengeanceButton = page.locator(".vui-rg-button");
+  assert.equal(await vengeanceButton.count(), 1, "VengeanceUI Radial Glow Button is missing");
+  const glowBefore = await vengeanceButton.evaluate((element) =>
+    getComputedStyle(element).getPropertyValue("--vui-rg-pos-x").trim(),
+  );
+  await vengeanceButton.hover();
+  await page.waitForTimeout(820);
+  const glowAfter = await vengeanceButton.evaluate((element) =>
+    getComputedStyle(element).getPropertyValue("--vui-rg-pos-x").trim(),
+  );
+  const shineOpacity = Number(
+    await page.locator(".vui-rg-shine").evaluate((element) => getComputedStyle(element).opacity),
+  );
+  assert.notEqual(glowBefore, glowAfter, "Radial gradient does not animate on hover");
+  assert.ok(shineOpacity >= 0.9, "Radial button shine is not visible on hover");
+  await page.screenshot({ path: resolve(outputDirectory, "desktop-vengeance-button.png"), fullPage: true });
+
   const avatarTravel = await axisRange(page.locator('[data-motion="avatar"]'), "y");
   const playheadTravel = await axisRange(page.locator('[data-motion="playhead"]'), "x", 10, 100);
   assert.ok(avatarTravel >= 6, `Avatar travel was only ${avatarTravel}px`);
@@ -189,6 +206,7 @@ try {
         desktop: {
           layout: desktopLayout,
           autoplayPreview: true,
+          vengeanceRadialButton: true,
           avatarTravelPx: avatarTravel,
           playheadTravelPx: playheadTravel,
           pointerTiltDelta: Number(Math.abs(upperLeftTilt.m13 - lowerRightTilt.m13).toFixed(3)),
