@@ -38,10 +38,6 @@ function Header() {
         <strong>ARF_0503</strong>
         <small>/ Roblox Animator / Since 2023</small>
       </a>
-      <nav aria-label="Main navigation">
-        <a href="#expertise">Skills</a>
-        <a href="#work">Work</a>
-      </nav>
     </header>
   );
 }
