@@ -1,10 +1,9 @@
-# Third-party notices and design references
+# Third-party notice and design reference
 
-The page was independently implemented using these visual references:
+The current page was independently implemented using the visual structure of this reference:
 
-- Kazu Develops portfolio: https://sites.google.com/view/kazudevelops/home
-- Roborock US homepage: https://us.roborock.com/
+- Yuji Sato React portfolio template: https://yujisatojr.github.io/react-portfolio-template/
 
-Kazu Develops informed the direct introduction-first content flow. Roborock informed
-the restrained typography, spacing, surfaces, and red accent. No source code, copy,
-branding, or media assets from either reference are included.
+The reference informed the dark canvas, purple wave motif, compact profile hero, expertise
+columns, and project grid. No source code, copy, branding, portrait, or project assets from
+the reference are included.
