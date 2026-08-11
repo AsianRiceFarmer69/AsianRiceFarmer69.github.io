@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Play, X } from "lucide-react";
+import { Box, Clapperboard, Play, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
 const PROJECT_VIDEOS = [
@@ -28,7 +28,23 @@ function Expertise() {
         <p>About</p>
         <h2>Commission workflow</h2>
       </div>
-      <p className="workflow-copy">I use Moon Animator for commissions and I am learning Blender.</p>
+      <div className="workflow-grid">
+        <article>
+          <Clapperboard aria-hidden="true" size={23} strokeWidth={1.7} />
+          <h3>Moon Animator</h3>
+          <p>My previous animation workflow.</p>
+        </article>
+        <article>
+          <Box aria-hidden="true" size={23} strokeWidth={1.7} />
+          <h3>Blender</h3>
+          <p>My current animation workflow.</p>
+        </article>
+        <article>
+          <Sparkles aria-hidden="true" size={23} strokeWidth={1.7} />
+          <h3>Animation events</h3>
+          <p>I use Moon Animator to add VFX and sound events, then test the animation in game.</p>
+        </article>
+      </div>
     </section>
   );
 }
