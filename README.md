@@ -1,26 +1,25 @@
 # Andrew Le - Roblox Animation Portfolio
 
-An interactive portfolio for Andrew Le's Roblox animation commission work.
+A React portfolio for Andrew Le's Roblox animation commission work, published as a static GitHub Pages site.
 
 ## Experience goals
 
-- Put the moving Roblox showcase on the first screen.
-- Use a compact profile-sidebar and content-card layout.
-- Make interaction visible through a moving rig, timeline playhead, cursor light,
-  project tilt, animated navigation, expanding mobile profile, and theme switch.
-- Support keyboard navigation and reduced-motion preferences.
-- Keep the site responsive and free of horizontal overflow.
+- Lead with the moving Roblox showcase on the first screen.
+- Use a bright, product-led layout inspired by Roborock's restraint and spacing.
+- Pair that with Aceternity UI interaction patterns: Gooey Input, Card Spotlight,
+  scroll entrances, and the Productized Agency template's grid-and-horizon rhythm.
+- Keep the video dialog, keyboard navigation, mobile layout, and reduced-motion support accessible.
+- Avoid fake statistics, fake contact submission, and unnecessary effects.
 
-## Open-source foundation
+## Foundation
 
-- **React** for the interface.
-- **Motion** for animation and pointer interaction.
-- **Radix Primitives** for accessible tabs and the video dialog.
+- **React + Vite** for the static application and GitHub Pages build.
+- **Motion for React** for component, pointer, and scroll interactions.
+- **Aceternity UI** for adapted Gooey Input and Card Spotlight components.
+- **Radix Dialog** for the accessible YouTube lightbox.
 - **Lucide** for interface icons.
-- **vCard Personal Portfolio** for the MIT-licensed responsive layout structure.
-- **VengeanceUI Animated Button and Animated Number** for the showcase control and rolling frame counter.
 
-See `THIRD_PARTY_NOTICES.md` for the complete open-source license notices.
+See `THIRD_PARTY_NOTICES.md` for source and usage references.
 
 ## Run locally
 
@@ -36,4 +35,4 @@ generated `index.html`, `favicon.svg`, and hashed `assets/` are copied to the
 repository root for GitHub Pages.
 
 Run `npm run check:visual` for automated desktop, mobile, interaction, motion,
-video, keyboard, theme, and reduced-motion browser checks.
+video, keyboard, and reduced-motion browser checks.

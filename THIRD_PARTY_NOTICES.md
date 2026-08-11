@@ -1,58 +1,21 @@
-# Third-party notices
+# Third-party notices and design references
 
-This portfolio adapts the responsive vCard layout structure from:
+This portfolio includes JavaScript adaptations of these public Aceternity UI components:
 
-- Source: https://github.com/codewithsadee/vcard-personal-portfolio
-- License: MIT
+- Gooey Input: https://ui.aceternity.com/components/gooey-input
+- Gooey Input registry source: https://ui.aceternity.com/registry/gooey-input.json
+- Card Spotlight: https://ui.aceternity.com/components/card-spotlight
+- Card Spotlight registry source: https://ui.aceternity.com/registry/card-spotlight.json
+- Aceternity UI licensing information: https://ui.aceternity.com/licence
 
-MIT License
+The adaptations preserve the interaction concepts while using this project's existing
+React, Motion, and plain-CSS setup. The Card Spotlight omits the original optional
+Three.js canvas layer to keep the static portfolio lightweight.
 
-Copyright (c) 2022 codewithsadee
+The overall page was independently implemented using these visual references:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+- Roborock US homepage: https://us.roborock.com/
+- Aceternity Productized Agency template preview:
+  https://ui.aceternity.com/template-preview/productized-agency-template
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
----
-
-This portfolio also includes adapted Animated Button and Animated Number components from:
-
-- Source: https://github.com/Ashutoshx7/VengeanceUI
-- Components: `src/components/ui/animated-button.tsx` and `src/components/ui/animated-number.tsx`
-- License: MIT
-
-MIT License
-
-Copyright (c) 2025-2026 Ashutoshx7
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+No Roborock product assets, branding, or source code are included.
