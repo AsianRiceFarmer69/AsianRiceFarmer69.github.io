@@ -54,6 +54,7 @@ try {
   assert.equal(await desktop.locator(".ambient-wave").count(), 0, "The removed squiggly line still renders");
   assert.match(await desktop.locator(".brand").innerText(), /ARF_0503/);
   assert.match(await desktop.locator(".brand").innerText(), /Roblox Animator \/ Since 2023/i);
+  assert.equal(await desktop.locator(".site-header nav").count(), 0, "The removed header navigation still renders");
   assert.equal(await desktop.locator(".expertise-grid article").count(), 3, "Expected three compact expertise items");
   assert.equal(await desktop.locator(".project-card").count(), 4, "Expected four clips in one project grid");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
