@@ -328,7 +328,7 @@ function App() {
             <span className="brand-mark">AL</span>
             <span className="brand-name">andrew le</span>
           </a>
-          <p>Roblox animator · Commissions since 2023</p>
+          <p>Roblox animator · I’ve started since 2023</p>
           <a
             href="https://github.com/AsianRiceFarmer69/AsianRiceFarmer69.github.io"
             target="_blank"
