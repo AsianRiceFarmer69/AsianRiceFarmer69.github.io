@@ -58,7 +58,11 @@ try {
   assert.equal(await desktop.locator(".expertise-grid").count(), 0, "The removed expertise claims still render");
   assert.equal(await desktop.getByText("Combat animation", { exact: true }).count(), 0);
   assert.equal(await desktop.getByText("Cinematic sequences", { exact: true }).count(), 0);
-  assert.match(await desktop.locator(".workflow-copy").innerText(), /Moon Animator.*learning Blender/i);
+  assert.equal(await desktop.locator(".workflow-grid article").count(), 3, "Expected three truthful workflow items");
+  assert.equal(await desktop.locator(".workflow-grid svg").count(), 3, "Workflow icons are missing");
+  assert.match(await desktop.locator(".workflow-grid").innerText(), /previous animation workflow/i);
+  assert.match(await desktop.locator(".workflow-grid").innerText(), /current animation workflow/i);
+  assert.match(await desktop.locator(".workflow-grid").innerText(), /VFX.*sound events.*test.*in game/is);
   assert.equal(await desktop.locator(".project-card").count(), 4, "Expected four clips in one project grid");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
   for (const id of videoIds) {
@@ -81,7 +85,7 @@ try {
   collectErrors(mobile, errors, "mobile");
   await mobile.goto(address, { waitUntil: "domcontentloaded" });
   await mobile.locator(".project-card").first().waitFor({ state: "visible" });
-  for (const selector of [".workflow-copy", ".project-grid"]) {
+  for (const selector of [".workflow-grid", ".project-grid"]) {
     await mobile.locator(selector).scrollIntoViewIfNeeded();
     await mobile.waitForTimeout(450);
   }
@@ -106,7 +110,7 @@ try {
   await browser.close();
 
   console.log(JSON.stringify({
-    desktop: { layout: desktopLayout, compact: true, truthfulWorkflowOnly: true, projectClips: 4 },
+    desktop: { layout: desktopLayout, compact: true, truthfulWorkflowWithIcons: true, projectClips: 4 },
     mobile: { layout: mobileLayout, singleColumnProjects: true },
     dialog: { keyboardAndEscape: true, selectedClipLoads: true, focusReturns: true },
     consoleErrors: errors,
