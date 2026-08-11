@@ -24,7 +24,8 @@ import {
   useReducedMotion,
   useSpring,
 } from "motion/react";
-import RadialGlowButton from "./components/ui/RadialGlowButton";
+import AnimatedButton from "./components/ui/AnimatedButton";
+import AnimatedNumber from "./components/ui/AnimatedNumber";
 
 const VIDEO_ID = "Xc6p7WxNs8Q";
 
@@ -78,6 +79,15 @@ const processSteps = [
 
 function MotionAvatar({ reduceMotion }) {
   const loop = reduceMotion ? undefined : { repeat: Infinity, ease: "easeInOut" };
+  const [frame, setFrame] = useState(24);
+
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    const frameTimer = window.setInterval(() => {
+      setFrame((current) => (current >= 96 ? 24 : current + 8));
+    }, 900);
+    return () => window.clearInterval(frameTimer);
+  }, [reduceMotion]);
 
   return (
     <div className="motion-avatar" role="img" aria-label="Animated Roblox-style character rig">
@@ -148,7 +158,9 @@ function MotionAvatar({ reduceMotion }) {
           <path className="rig-face" d="M82 49h16M90 41v16" />
         </motion.g>
       </svg>
-      <span className="avatar-frame">FRAME 024</span>
+      <div className="avatar-frame">
+        <span>FRAME</span> <AnimatedNumber value={frame} />
+      </div>
       <span className="avatar-playhead" data-motion="playhead" aria-hidden="true" />
     </div>
   );
@@ -293,7 +305,7 @@ function VideoShowcase({ reduceMotion }) {
             <span aria-hidden="true" /> Moving preview
           </span>
           <Dialog.Trigger asChild>
-            <RadialGlowButton
+            <AnimatedButton
               className="watch-button"
               data-video-trigger
               type="button"
@@ -301,7 +313,7 @@ function VideoShowcase({ reduceMotion }) {
             >
               <span className="watch-icon"><Play size={18} fill="currentColor" /></span>
               Watch with sound
-            </RadialGlowButton>
+            </AnimatedButton>
           </Dialog.Trigger>
         </div>
 

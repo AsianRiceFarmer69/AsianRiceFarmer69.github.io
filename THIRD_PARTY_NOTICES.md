@@ -29,10 +29,10 @@ SOFTWARE.
 
 ---
 
-This portfolio also includes an adapted Radial Glow Button from:
+This portfolio also includes adapted Animated Button and Animated Number components from:
 
 - Source: https://github.com/Ashutoshx7/VengeanceUI
-- Component: `src/components/ui/radial-glow-button.tsx`
+- Components: `src/components/ui/animated-button.tsx` and `src/components/ui/animated-number.tsx`
 - License: MIT
 
 MIT License
