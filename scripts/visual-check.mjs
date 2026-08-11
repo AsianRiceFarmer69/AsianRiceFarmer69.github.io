@@ -14,89 +14,122 @@ const server = await createServer({
   server: { host: "127.0.0.1", port: 4173, strictPort: true },
 });
 
-async function revealEntirePage(page) {
-  await page.evaluate(async () => {
-    const step = Math.max(420, Math.floor(window.innerHeight * 0.72));
-    for (let position = 0; position < document.body.scrollHeight; position += step) {
-      window.scrollTo(0, position);
-      await new Promise((resolveDelay) => setTimeout(resolveDelay, 90));
-    }
-    window.scrollTo(0, document.body.scrollHeight);
-  });
-  await page.waitForTimeout(850);
+async function collectLayout(page) {
+  return page.evaluate(() => ({
+    height: document.documentElement.scrollHeight,
+    viewportHeight: window.innerHeight,
+    horizontalOverflow:
+      document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  }));
 }
 
 try {
   await server.listen();
-  const browser = await chromium.launch({
-    channel: "chrome",
-    headless: true,
-    args: ["--enable-webgl", "--use-angle=swiftshader"],
-  });
-
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
   const consoleErrors = [];
+
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
 
-  await page.goto(address, { waitUntil: "networkidle" });
-  await page.locator("canvas").waitFor({ state: "visible" });
-  await page.waitForTimeout(1200);
+  await page.goto(address, { waitUntil: "domcontentloaded" });
+  await page.locator(".project-card").waitFor({ state: "visible" });
+  await page.waitForTimeout(900);
 
   const desktopEvidence = {
     title: await page.title(),
     heading: await page.locator("h1").innerText(),
     canvasCount: await page.locator("canvas").count(),
-    videoPosterCount: await page.locator(".video-poster").count(),
-    horizontalOverflow: await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-    ),
+    projectPosterCount: await page.locator(".project-poster").count(),
+    tabCount: await page.locator('[role="tab"]').count(),
+    layout: await collectLayout(page),
   };
 
-  await revealEntirePage(page);
   await page.screenshot({
     path: resolve(outputDirectory, "desktop-full.png"),
     fullPage: true,
   });
-  await page.locator(".project-section").screenshot({
-    path: resolve(outputDirectory, "desktop-project.png"),
+  await page.locator(".intro-project").screenshot({
+    path: resolve(outputDirectory, "desktop-top.png"),
   });
-  await page.locator(".hero").screenshot({
-    path: resolve(outputDirectory, "desktop-hero.png"),
+  await page.locator(".overview").screenshot({
+    path: resolve(outputDirectory, "desktop-overview.png"),
   });
-  await page.locator(".video-poster").click();
-  await page.locator("iframe[title*='Combat Encounter']").waitFor({ state: "visible" });
-  desktopEvidence.videoEmbedActivates = true;
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(address, { waitUntil: "networkidle" });
-  await page.locator("canvas").waitFor({ state: "visible" });
-  await page.waitForTimeout(900);
-  await revealEntirePage(page);
+  await page.locator(".vui-highlight-cell").nth(2).click();
+  desktopEvidence.highlightGridChanges = (
+    await page.locator(".vui-highlight-detail").innerText()
+  ).includes("brief");
+
+  await page.getByRole("tab", { name: "Workflow" }).click();
+  desktopEvidence.workflowPanel = (
+    await page.getByRole("tabpanel").innerText()
+  ).includes("Blender");
+  await page.waitForTimeout(360);
+  await page.locator(".overview").screenshot({
+    path: resolve(outputDirectory, "desktop-workflow.png"),
+  });
+  await page.getByRole("tab", { name: "Workflow" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(120);
+  desktopEvidence.keyboardTabs =
+    (await page.getByRole("tab", { name: "About" }).getAttribute("data-state")) ===
+    "active";
+
+  await page.locator(".showcase-button").click();
+  await page.locator("iframe[title*='Combat Encounter']").waitFor({ state: "visible" });
+  desktopEvidence.videoDialogOpens = true;
+  await page.waitForTimeout(650);
   await page.screenshot({
+    path: resolve(outputDirectory, "desktop-video-dialog.png"),
+  });
+  await page.keyboard.press("Escape");
+  await page.locator("iframe[title*='Combat Encounter']").waitFor({ state: "detached" });
+  desktopEvidence.escapeClosesDialog = true;
+
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  mobile.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(`mobile: ${message.text()}`);
+  });
+  mobile.on("pageerror", (error) => consoleErrors.push(`mobile: ${error.message}`));
+  await mobile.goto(address, { waitUntil: "domcontentloaded" });
+  await mobile.locator(".project-card").waitFor({ state: "visible" });
+  await mobile.waitForTimeout(800);
+  await mobile.screenshot({
     path: resolve(outputDirectory, "mobile-full.png"),
     fullPage: true,
   });
-  await page.locator(".hero").screenshot({
-    path: resolve(outputDirectory, "mobile-hero.png"),
-  });
 
   const mobileEvidence = {
-    horizontalOverflow: await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-    ),
-    menuVisible: await page.locator(".menu-button").isVisible(),
+    layout: await collectLayout(mobile),
+    navigationButtonCount: await mobile.locator(".menu-button").count(),
+    showcaseButtonVisible: await mobile.locator(".showcase-button").isVisible(),
   };
-  await page.locator(".menu-button").click();
-  mobileEvidence.menuOpens = await page.locator(".mobile-nav").isVisible();
-  await page.keyboard.press("Escape");
-  await page.locator(".mobile-nav").waitFor({ state: "detached" });
-  mobileEvidence.escapeClosesMenu = true;
+  await mobile.getByRole("tab", { name: "About" }).click();
+  mobileEvidence.aboutPanelVisible = (
+    await mobile.getByRole("tabpanel").innerText()
+  ).includes("understanding");
+
+  const reducedMotionPage = await browser.newPage({
+    viewport: { width: 1280, height: 800 },
+    reducedMotion: "reduce",
+  });
+  await reducedMotionPage.goto(address, { waitUntil: "domcontentloaded" });
+  await reducedMotionPage.locator("h1").waitFor({ state: "visible" });
+  const reducedMotionEvidence = {
+    headingVisible: await reducedMotionPage.locator("h1").isVisible(),
+  };
 
   await browser.close();
-  console.log(JSON.stringify({ desktopEvidence, mobileEvidence, consoleErrors }, null, 2));
+  console.log(
+    JSON.stringify(
+      { desktopEvidence, mobileEvidence, reducedMotionEvidence, consoleErrors },
+      null,
+      2,
+    ),
+  );
 } finally {
   await server.close();
 }

@@ -1,412 +1,286 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as Tabs from "@radix-ui/react-tabs";
 import {
-  ArrowDown,
-  ArrowUpRight,
-  Box,
-  Clapperboard,
-  Menu,
-  MousePointer2,
+  ArrowRight,
+  Code2,
+  ExternalLink,
   Play,
-  Sparkles,
   X,
 } from "lucide-react";
-import Reveal from "./components/Reveal";
+import { MotionConfig, motion, useReducedMotion } from "motion/react";
+import AnimatedButton from "./components/ui/AnimatedButton";
+import HighlightGrid from "./components/ui/HighlightGrid";
+import StaggerText from "./components/ui/StaggerText";
 
-const ImpactScene = lazy(() => import("./components/ImpactScene"));
-
-const navigation = [
-  { label: "Work", href: "#work" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "About", href: "#about" },
+const overviewTabs = [
+  { value: "services", label: "What I do" },
+  { value: "workflow", label: "Workflow" },
+  { value: "about", label: "About" },
 ];
 
-const process = [
+const services = [
   {
     number: "01",
-    title: "Listen",
-    copy: "We lock in the mood, references, timing, and the feeling you want the scene to leave behind.",
-    icon: MousePointer2,
+    label: "Combat",
+    color: "#e94439",
+    copy: "Attacks, reactions, and choreography that stay clear and readable.",
   },
   {
     number: "02",
-    title: "Build",
-    copy: "I block the important poses first, then shape the choreography and camera around a clear visual rhythm.",
-    icon: Box,
+    label: "Cinematics",
+    color: "#ef6b47",
+    copy: "Camera-led moments shaped around story, tension, and impact.",
   },
   {
     number: "03",
-    title: "Polish",
-    copy: "Feedback passes refine the weight, flow, and small details until the animation feels ready to ship.",
-    icon: Sparkles,
+    label: "Commissions",
+    color: "#c7322a",
+    copy: "Animation built around your brief, references, and feedback.",
   },
 ];
 
-function VideoEmbed() {
-  const [isPlaying, setIsPlaying] = useState(false);
-
+function VideoDialog() {
   return (
-    <div className="video-frame">
-      {isPlaying ? (
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/Xc6p7WxNs8Q?autoplay=1&rel=0"
-          title="Combat Encounter Project: Roblox Studio Showcase"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
+    <Dialog.Root>
+      <div className="project-poster">
+        <img
+          src="https://i.ytimg.com/vi/Xc6p7WxNs8Q/maxresdefault.jpg"
+          alt="Combat Encounter Animation Project in Roblox Studio"
         />
-      ) : (
-        <button
-          className="video-poster"
-          type="button"
-          onClick={() => setIsPlaying(true)}
-          aria-label="Play Combat Encounter Project video"
-        >
-          <img
-            src="https://i.ytimg.com/vi/Xc6p7WxNs8Q/maxresdefault.jpg"
-            alt="Combat Encounter Project Roblox animation showcase"
-            loading="lazy"
-          />
-          <span className="poster-shade" />
-          <span className="poster-badge">Project film · 01</span>
-          <span className="poster-action">
-            <span className="play-button">
-              <Play size={25} fill="currentColor" />
+        <span className="poster-overlay" />
+        <span className="poster-label">Featured work</span>
+        <Dialog.Trigger asChild>
+          <AnimatedButton
+            className="showcase-button"
+            type="button"
+            aria-label="Play Combat Encounter Animation Project"
+          >
+            <span className="play-icon" aria-hidden="true">
+              <Play size={18} fill="currentColor" />
             </span>
             <span>Play showcase</span>
-          </span>
-        </button>
-      )}
+          </AnimatedButton>
+        </Dialog.Trigger>
+      </div>
+
+      <Dialog.Portal>
+        <Dialog.Overlay className="dialog-overlay" />
+        <Dialog.Content className="dialog-content">
+          <div className="dialog-header">
+            <div>
+              <Dialog.Title>Combat Encounter Animation Project</Dialog.Title>
+              <Dialog.Description>Roblox Studio combat animation showcase</Dialog.Description>
+            </div>
+            <Dialog.Close className="dialog-close" aria-label="Close video">
+              <X size={20} />
+            </Dialog.Close>
+          </div>
+          <div className="dialog-video">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/Xc6p7WxNs8Q?autoplay=1&rel=0"
+              title="Combat Encounter Animation Project: Roblox Studio showcase"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function ServicesPanel() {
+  return <HighlightGrid items={services} />;
+}
+
+function WorkflowPanel() {
+  return (
+    <div className="workflow-grid">
+      <article className="workflow-step">
+        <p>Foundation · Since 2023</p>
+        <h3>Moon Animator</h3>
+        <span>My main workflow for Roblox commission animation.</span>
+      </article>
+      <ArrowRight className="workflow-arrow" size={24} aria-hidden="true" />
+      <article className="workflow-step workflow-current">
+        <p>Learning now</p>
+        <h3>Blender</h3>
+        <span>My next step toward more control and polish.</span>
+      </article>
     </div>
   );
 }
 
-function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+function AboutPanel() {
+  return (
+    <div className="about-panel">
+      <p className="about-statement">
+        I am not the best at building portfolios. I care more about understanding
+        what you need and turning the version in your head into animation that feels alive.
+      </p>
+      <p className="about-note">
+        I bring patience, communication, and consistent effort to every commission.
+      </p>
+    </div>
+  );
+}
 
-  useEffect(() => {
-    const closeOnEscape = (event) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, []);
+function Overview() {
+  const [activeTab, setActiveTab] = useState("services");
+  const reduceMotion = useReducedMotion();
 
   return (
-    <header className="site-header">
-      <a className="brand" href="#top" aria-label="ARF Motion home">
-        <span className="brand-mark">A</span>
-        <span className="brand-copy">
-          <strong>ARF</strong>
-          <small>Motion</small>
-        </span>
-      </a>
+    <Tabs.Root
+      className="overview"
+      value={activeTab}
+      onValueChange={setActiveTab}
+      aria-label="Portfolio overview"
+    >
+      <div className="overview-heading">
+        <p>Quick overview</p>
+        <Tabs.List className="tab-list" aria-label="Portfolio details">
+          {overviewTabs.map((tab) => (
+            <Tabs.Trigger className="tab-trigger" value={tab.value} key={tab.value}>
+              {tab.label}
+              {activeTab === tab.value && (
+                <motion.span
+                  className="tab-indicator"
+                  layoutId="active-overview-tab"
+                  transition={{ type: "spring", stiffness: 500, damping: 38 }}
+                />
+              )}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+      </div>
 
-      <nav className="desktop-nav" aria-label="Main navigation">
-        {navigation.map((item) => (
-          <a key={item.href} href={item.href}>
-            {item.label}
-          </a>
-        ))}
-      </nav>
-
-      <button
-        className="menu-button"
-        type="button"
-        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-        aria-expanded={menuOpen}
-        onClick={() => setMenuOpen((value) => !value)}
-      >
-        {menuOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.nav
-            className="mobile-nav"
-            aria-label="Mobile navigation"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2 }}
-          >
-            {navigation.map((item, index) => (
-              <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
-                <span>0{index + 1}</span>
-                {item.label}
-              </a>
-            ))}
-          </motion.nav>
-        )}
-      </AnimatePresence>
-    </header>
+      <Tabs.Content className="tab-content" value="services">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+        >
+          <ServicesPanel />
+        </motion.div>
+      </Tabs.Content>
+      <Tabs.Content className="tab-content" value="workflow">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+        >
+          <WorkflowPanel />
+        </motion.div>
+      </Tabs.Content>
+      <Tabs.Content className="tab-content" value="about">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+        >
+          <AboutPanel />
+        </motion.div>
+      </Tabs.Content>
+    </Tabs.Root>
   );
 }
 
 function App() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <div className="site-shell" id="top">
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
-      <Header />
-
-      <main id="main-content">
-        <section className="hero section-pad" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <motion.p
-              className="eyebrow"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55 }}
-            >
-              Andrew Le · Roblox Animator
-            </motion.p>
-            <motion.h1
-              id="hero-title"
-              initial={{ opacity: 0, y: 26 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.08, ease: [0.2, 0.75, 0.25, 1] }}
-            >
-              Combat,
-              <span>built to land.</span>
-            </motion.h1>
-            <motion.p
-              className="hero-intro"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.18 }}
-            >
-              I create combat animation and cinematic sequences for Roblox—turning
-              rough ideas into moments players can feel.
-            </motion.p>
-            <motion.div
-              className="hero-actions"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.26 }}
-            >
-              <a className="button button-dark" href="#work">
-                View featured work <ArrowDown size={17} />
-              </a>
-              <a className="text-link" href="#workflow">
-                See my workflow <ArrowUpRight size={16} />
-              </a>
-            </motion.div>
-          </div>
-
-          <motion.div
-            className="hero-visual"
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.12, ease: [0.2, 0.75, 0.25, 1] }}
-          >
-            <div className="visual-label">
-              <span className="status-dot" /> Interactive impact study
-            </div>
-            <Suspense fallback={<div className="scene-fallback">Loading 3D scene…</div>}>
-              <ImpactScene />
-            </Suspense>
-            <div className="visual-hint">
-              <MousePointer2 size={15} /> Drag to explore
-            </div>
-            <div className="visual-index">03D</div>
-          </motion.div>
-
-          <div className="hero-facts" aria-label="Experience highlights">
-            <div>
-              <span>01</span>
-              <strong>Since 2023</strong>
-              <small>Commission experience</small>
-            </div>
-            <div>
-              <span>02</span>
-              <strong>Moon → Blender</strong>
-              <small>An expanding workflow</small>
-            </div>
-            <div>
-              <span>03</span>
-              <strong>Combat + Cinematics</strong>
-              <small>Motion with intent</small>
-            </div>
-          </div>
-        </section>
-
-        <section className="project-section section-pad" id="work" aria-labelledby="project-title">
-          <div className="section-kicker light-kicker">
-            <span>Selected work</span>
-            <span>01 / 01</span>
-          </div>
-
-          <Reveal className="project-heading">
-            <div>
-              <p className="project-type">Featured project · Roblox Studio</p>
-              <h2 id="project-title">Combat Encounter Animation Project</h2>
-            </div>
-            <a
-              className="circle-link"
-              href="https://youtu.be/Xc6p7WxNs8Q"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Watch Combat Encounter Animation Project on YouTube"
-            >
-              <ArrowUpRight size={24} />
-            </a>
-          </Reveal>
-
-          <Reveal className="video-shell" delay={0.08}>
-            <VideoEmbed />
-          </Reveal>
-
-          <div className="project-details">
-            <Reveal className="project-summary">
-              <p>
-                A first look at the combat-focused direction of my portfolio. This Roblox
-                Studio showcase is built around readable action, purposeful timing, and the
-                energy of an encounter in motion.
-              </p>
-            </Reveal>
-            <Reveal className="project-meta" delay={0.08}>
-              <div>
-                <span>Focus</span>
-                <strong>Combat animation</strong>
-              </div>
-              <div>
-                <span>Platform</span>
-                <strong>Roblox Studio</strong>
-              </div>
-              <div>
-                <span>Format</span>
-                <strong>Showcase reel</strong>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="process-section section-pad" aria-labelledby="process-title">
-          <div className="section-kicker">
-            <span>How I work</span>
-            <span>Simple. Collaborative. Focused.</span>
-          </div>
-          <Reveal className="process-heading">
-            <h2 id="process-title">
-              Your idea first.
-              <span>Then every frame.</span>
-            </h2>
-            <p>
-              Good animation starts before the timeline. I want to understand the feeling
-              you are chasing, then make each creative choice support it.
-            </p>
-          </Reveal>
-
-          <div className="process-grid">
-            {process.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <Reveal className="process-card" delay={index * 0.07} key={item.number}>
-                  <div className="card-topline">
-                    <span>{item.number}</span>
-                    <Icon size={21} strokeWidth={1.7} />
-                  </div>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.copy}</p>
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="workflow-section section-pad" id="workflow" aria-labelledby="workflow-title">
-          <div className="workflow-copy">
-            <div className="section-kicker light-kicker">
-              <span>Workflow evolution</span>
-              <span>2023 → Next</span>
-            </div>
-            <Reveal>
-              <h2 id="workflow-title">
-                Built in Roblox.
-                <span>Growing in Blender.</span>
-              </h2>
-              <p className="workflow-intro">
-                Moon Animator has been the foundation of my commission workflow since 2023.
-                Now I am bringing Blender into the process to gain more control, push the
-                polish further, and keep growing with every project.
-              </p>
-            </Reveal>
-          </div>
-
-          <div className="workflow-track">
-            <Reveal className="workflow-step">
-              <div className="workflow-marker">
-                <span />
-              </div>
-              <div className="workflow-step-copy">
-                <small>Foundation · 2023—Now</small>
-                <h3>Moon Animator</h3>
-                <p>
-                  The tool that shaped my Roblox commission workflow and taught me how to
-                  iterate quickly inside Studio.
-                </p>
-              </div>
-              <Clapperboard size={28} strokeWidth={1.4} />
-            </Reveal>
-
-            <Reveal className="workflow-step current" delay={0.1}>
-              <div className="workflow-marker">
-                <span />
-              </div>
-              <div className="workflow-step-copy">
-                <small>New direction · In progress</small>
-                <h3>Blender</h3>
-                <p>
-                  A growing workflow for deeper control, cleaner motion, and more ambitious
-                  animation work.
-                </p>
-              </div>
-              <Box size={28} strokeWidth={1.4} />
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="about-section section-pad" id="about" aria-labelledby="about-title">
-          <div className="section-kicker">
-            <span>A note from me</span>
-            <span>Honest work over hype</span>
-          </div>
-          <Reveal className="about-layout">
-            <h2 id="about-title">
-              Portfolios are not my strongest skill.
-              <span>Listening is.</span>
-            </h2>
-            <div className="about-copy">
-              <p>
-                I work hard to understand what you need and turn the version in your head
-                into something that feels alive. Your goals, your references, and the dream
-                behind the project matter to me.
-              </p>
-              <p>
-                I am still learning, especially as I move into Blender, but I bring patience,
-                effort, and care to the work. Every project is another chance to make something
-                better than the last.
-              </p>
-            </div>
-          </Reveal>
-        </section>
-      </main>
-
-      <footer className="site-footer section-pad">
-        <div className="footer-mark">ARF</div>
-        <div className="footer-copy">
-          <strong>Roblox animation with weight, rhythm, and intent.</strong>
-          <small>© {new Date().getFullYear()} Andrew Le. Built for the next encounter.</small>
-        </div>
-        <a href="#top" className="back-to-top" aria-label="Back to top">
-          <ArrowUpRight size={18} />
+    <MotionConfig reducedMotion="user">
+      <div className="site-shell" id="top">
+        <a className="skip-link" href="#main-content">
+          Skip to content
         </a>
-      </footer>
-    </div>
+
+        <header className="site-header">
+          <a className="brand" href="#top" aria-label="Andrew Le portfolio home">
+            <strong>Andrew Le</strong>
+            <span>Roblox Animator</span>
+          </a>
+          <p className="header-meta">
+            <span aria-hidden="true" />
+            Animating since 2023
+          </p>
+        </header>
+
+        <motion.main
+          id="main-content"
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.45 }}
+        >
+          <section className="intro-project" aria-labelledby="hero-title">
+            <motion.div
+              className="intro-copy"
+              initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: [0.2, 0.75, 0.25, 1] }}
+            >
+              <p className="eyebrow">Roblox animation commissions</p>
+              <h1 id="hero-title">
+                <StaggerText delay={0.03}>Combat and cinematics,</StaggerText>
+                <span className="accent-line">
+                  <StaggerText delay={0.16}>made for Roblox.</StaggerText>
+                </span>
+              </h1>
+              <p className="intro-lead">
+                I animate readable fight sequences and cinematic moments for Roblox projects.
+              </p>
+              <p className="experience-note">
+                Moon Animator has been my commission foundation since 2023. I am now
+                learning Blender for more control and polish.
+              </p>
+            </motion.div>
+
+            <motion.article
+              className="project-card"
+              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.08, ease: [0.2, 0.75, 0.25, 1] }}
+              aria-labelledby="project-title"
+            >
+              <VideoDialog />
+              <div className="project-caption">
+                <div>
+                  <p>Roblox Studio · Combat animation</p>
+                  <h2 id="project-title">Combat Encounter Animation Project</h2>
+                </div>
+                <a
+                  className="youtube-link"
+                  href="https://youtu.be/Xc6p7WxNs8Q"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Watch Combat Encounter Animation Project on YouTube"
+                >
+                  <ExternalLink size={18} />
+                </a>
+                <p className="project-description">
+                  A showcase built around readable action, purposeful timing, and impact.
+                </p>
+              </div>
+            </motion.article>
+          </section>
+
+          <Overview />
+        </motion.main>
+
+        <footer className="site-footer">
+          <p>© {new Date().getFullYear()} Andrew Le</p>
+          <a
+            href="https://github.com/AsianRiceFarmer69/AsianRiceFarmer69.github.io"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Code2 size={16} /> View source
+          </a>
+        </footer>
+      </div>
+    </MotionConfig>
   );
 }
 
