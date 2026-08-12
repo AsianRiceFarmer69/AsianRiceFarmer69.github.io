@@ -21,6 +21,10 @@ await copyFile(
 await cp(resolve(buildDirectory, "assets"), resolve(repositoryRoot, "assets"), {
   recursive: true,
 });
+await rm(resolve(repositoryRoot, "projects"), { recursive: true, force: true });
+await cp(resolve(buildDirectory, "projects"), resolve(repositoryRoot, "projects"), {
+  recursive: true,
+});
 
 console.log("GitHub Pages files copied to the repository root.");
 
