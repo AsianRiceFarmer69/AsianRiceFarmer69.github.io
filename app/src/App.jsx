@@ -2,11 +2,33 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Box, Clapperboard, Play, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
-const PROJECT_VIDEOS = [
-  { id: "Xc6p7WxNs8Q", label: "Main showcase" },
-  { id: "EIzCjA4LbQU", label: "Combat clip 02" },
-  { id: "fGbMmU9d6NM", label: "Combat clip 03" },
-  { id: "nGm_EFrSYK8", label: "Combat clip 04" },
+const PROJECTS = [
+  {
+    id: "combat-encounter",
+    title: "Combat Encounter",
+    description: "Four clips from one Roblox animation project. Click any clip to watch with sound.",
+    videos: [
+      { id: "Xc6p7WxNs8Q", label: "Main showcase" },
+      { id: "EIzCjA4LbQU", label: "Combat clip 02" },
+      { id: "fGbMmU9d6NM", label: "Combat clip 03" },
+      { id: "nGm_EFrSYK8", label: "Combat clip 04" },
+    ],
+  },
+  {
+    id: "fps-project",
+    title: "FPS Project",
+    description: "Four animation clips and two development screenshots from my FPS project.",
+    videos: [
+      { id: "TB0oHccSFOY", label: "FPS clip 01" },
+      { id: "nc6DqCFRbn4", label: "FPS clip 02" },
+      { id: "iKawZ5HKZ7E", label: "FPS clip 03" },
+      { id: "3dsFml4PJFc", label: "FPS clip 04" },
+    ],
+    stills: [
+      { src: "/projects/fps/blender-pistol-animation.png", alt: "FPS character and pistol animation setup in Blender" },
+      { src: "/projects/fps/roblox-testing.png", alt: "FPS pistol animation being tested in Roblox Studio" },
+    ],
+  },
 ];
 
 function Header() {
@@ -49,13 +71,13 @@ function Expertise() {
   );
 }
 
-function ProjectGallery() {
-  const [activeVideo, setActiveVideo] = useState(PROJECT_VIDEOS[0]);
+function ProjectGallery({ project }) {
+  const [activeVideo, setActiveVideo] = useState(project.videos[0]);
 
   return (
     <Dialog.Root>
       <div className="project-grid">
-        {PROJECT_VIDEOS.map((video) => (
+        {project.videos.map((video) => (
           <article key={video.id}>
             <Dialog.Trigger asChild>
               <button
@@ -68,7 +90,7 @@ function ProjectGallery() {
               >
                 <img
                   src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}
-                  alt={`${video.label} from the Combat Encounter Animation Project`}
+                  alt={`${video.label} from ${project.title}`}
                 />
                 <span className="project-overlay" aria-hidden="true" />
                 <span className="project-play"><Play size={18} fill="currentColor" /></span>
@@ -90,7 +112,7 @@ function ProjectGallery() {
         >
           <div className="dialog-heading">
             <div>
-              <Dialog.Title>Combat Encounter Animation Project</Dialog.Title>
+              <Dialog.Title>{project.title}</Dialog.Title>
               <Dialog.Description>{activeVideo.label} / Roblox animation showcase</Dialog.Description>
             </div>
             <Dialog.Close className="dialog-close" aria-label="Close video">
@@ -100,7 +122,7 @@ function ProjectGallery() {
           <div className="dialog-video">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${activeVideo.id}?autoplay=1&rel=0`}
-              title={`Combat Encounter Animation Project: ${activeVideo.label}`}
+              title={`${project.title}: ${activeVideo.label}`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
@@ -112,20 +134,22 @@ function ProjectGallery() {
   );
 }
 
-function Work() {
+function ProjectSection({ project, index }) {
   return (
-    <section className="work-section" id="work">
+    <section className="work-section" id={index === 0 ? "work" : project.id}>
       <div className="work-heading">
         <div className="section-heading">
-          <p>Selected project</p>
-          <h2>Combat Encounter</h2>
+          <p>Project {String(index + 1).padStart(2, "0")}</p>
+          <h2>{project.title}</h2>
         </div>
-        <p>
-          Four clips from one Roblox animation project, focused on readable combat,
-          intentional timing, and impact. Click any clip to watch with sound.
-        </p>
+        <p>{project.description}</p>
       </div>
-      <ProjectGallery />
+      <ProjectGallery project={project} />
+      {project.stills && (
+        <div className="project-stills" aria-label={`${project.title} development screenshots`}>
+          {project.stills.map((still) => <img key={still.src} src={still.src} alt={still.alt} />)}
+        </div>
+      )}
     </section>
   );
 }
@@ -137,7 +161,9 @@ function App() {
       <Header />
       <main>
         <Expertise />
-        <Work />
+        {PROJECTS.map((project, index) => (
+          <ProjectSection project={project} index={index} key={project.id} />
+        ))}
       </main>
     </div>
   );

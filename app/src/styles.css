@@ -264,6 +264,21 @@ iframe {
   transform: translate(-50%, -50%) scale(1.08);
 }
 
+.project-stills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.project-stills img {
+  width: 100%;
+  aspect-ratio: 16 / 8.5;
+  object-fit: cover;
+  border: 1px solid #2b333e;
+  border-radius: 5px;
+}
+
 .dialog-overlay {
   position: fixed;
   z-index: 100;
@@ -396,6 +411,12 @@ iframe {
   .project-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .project-stills {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .project-card {
