@@ -6,7 +6,7 @@ const PROJECTS = [
   {
     id: "combat-encounter",
     title: "Combat Encounter",
-    description: "Four clips from one Roblox animation project. Click any clip to watch with sound.",
+    description: "Four clips from one Roblox animation project. Click any clip to watch.",
     videos: [
       { id: "Xc6p7WxNs8Q", label: "Main showcase" },
       { id: "EIzCjA4LbQU", label: "Combat clip 02" },
@@ -85,7 +85,7 @@ function ProjectGallery({ project }) {
                 data-video-trigger
                 data-video-id={video.id}
                 type="button"
-                aria-label={`Watch ${video.label} with sound`}
+                aria-label={`Watch ${video.label}`}
                 onClick={() => setActiveVideo(video)}
               >
                 <img
