@@ -10,6 +10,7 @@ const address = "http://127.0.0.1:4173";
 const videoIds = [
   "Xc6p7WxNs8Q", "EIzCjA4LbQU", "fGbMmU9d6NM", "nGm_EFrSYK8",
   "TB0oHccSFOY", "nc6DqCFRbn4", "iKawZ5HKZ7E", "3dsFml4PJFc",
+  "qsltCgljJDw",
 ];
 
 await mkdir(outputDirectory, { recursive: true });
@@ -51,7 +52,7 @@ try {
 
   const desktopLayout = await layout(desktop);
   assert.equal(desktopLayout.scrollWidth, desktopLayout.clientWidth, "Desktop has horizontal overflow");
-  assert.ok(desktopLayout.height <= 2500, `Desktop page is too long at ${desktopLayout.height}px`);
+  assert.ok(desktopLayout.height <= 3500, `Desktop page is too long at ${desktopLayout.height}px`);
   assert.equal(await desktop.locator(".hero").count(), 0, "The removed profile hero still renders");
   assert.equal(await desktop.locator("footer").count(), 0, "The removed footer still renders");
   assert.equal(await desktop.locator(".ambient-wave").count(), 0, "The removed squiggly line still renders");
@@ -66,10 +67,13 @@ try {
   assert.match(await desktop.locator(".workflow-grid").innerText(), /previous animation workflow/i);
   assert.match(await desktop.locator(".workflow-grid").innerText(), /current animation workflow/i);
   assert.match(await desktop.locator(".workflow-grid").innerText(), /VFX.*sound events.*test.*in game/is);
-  assert.equal(await desktop.locator(".work-section").count(), 2, "Expected two project sections");
-  assert.equal(await desktop.locator(".project-card").count(), 8, "Expected eight clips across two projects");
-  assert.equal(await desktop.locator(".project-stills img").count(), 2, "Expected two FPS development screenshots");
+  assert.equal(await desktop.locator(".work-section").count(), 3, "Expected three project sections");
+  assert.equal(await desktop.locator(".project-card").count(), 9, "Expected nine clips across three projects");
+  assert.equal(await desktop.locator(".project-stills img").count(), 5, "Expected five project screenshots");
   assert.match(await desktop.locator("#fps-project").innerText(), /FPS Project/);
+  assert.match(await desktop.locator("#custom-rigging").innerText(), /Custom Rigging/);
+  assert.match(await desktop.locator("#custom-rigging").innerText(), /previous Moon Animator workflow/i);
+  assert.equal(await desktop.locator("#custom-rigging .project-stills img").count(), 3);
   assert.equal(await desktop.getByText(/with sound/i).count(), 0, "The removed sound claim still renders");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
   for (const id of videoIds) {
@@ -98,7 +102,7 @@ try {
   }
   const mobileLayout = await layout(mobile);
   assert.equal(mobileLayout.scrollWidth, mobileLayout.clientWidth, "Mobile has horizontal overflow");
-  assert.ok(mobileLayout.height <= 3800, `Mobile page is too long at ${mobileLayout.height}px`);
+  assert.ok(mobileLayout.height <= 5200, `Mobile page is too long at ${mobileLayout.height}px`);
   assert.equal(
     (await mobile.locator(".project-grid").last().evaluate((element) => getComputedStyle(element).gridTemplateColumns)).split(" ").length,
     1,
@@ -111,13 +115,13 @@ try {
   await reduced.goto(address, { waitUntil: "domcontentloaded" });
   const reducedTrigger = reduced.locator("[data-video-trigger]").last();
   await reducedTrigger.click();
-  assert.match(await reduced.locator(".dialog-video iframe").getAttribute("src"), /3dsFml4PJFc/);
+  assert.match(await reduced.locator(".dialog-video iframe").getAttribute("src"), /qsltCgljJDw/);
 
   assert.deepEqual(errors, [], `First-party console errors: ${errors.join(" | ")}`);
   await browser.close();
 
   console.log(JSON.stringify({
-    desktop: { layout: desktopLayout, truthfulWorkflowWithIcons: true, projects: 2, projectClips: 8, fpsStills: 2 },
+    desktop: { layout: desktopLayout, truthfulWorkflowWithIcons: true, projects: 3, projectClips: 9, projectStills: 5 },
     mobile: { layout: mobileLayout, singleColumnProjects: true },
     dialog: { keyboardAndEscape: true, selectedClipLoads: true, focusReturns: true },
     consoleErrors: errors,

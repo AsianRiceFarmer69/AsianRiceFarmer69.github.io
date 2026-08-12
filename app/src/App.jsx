@@ -29,6 +29,19 @@ const PROJECTS = [
       { src: "/projects/fps/roblox-testing.png", alt: "FPS pistol animation being tested in Roblox Studio" },
     ],
   },
+  {
+    id: "custom-rigging",
+    title: "Custom Rigging",
+    description: "An older custom-rig animation made with my previous Moon Animator workflow.",
+    videos: [
+      { id: "qsltCgljJDw", label: "Moon Animator workflow" },
+    ],
+    stills: [
+      { src: "/projects/custom-rigging/posed-character.png", alt: "Custom character rig posed in Roblox Studio" },
+      { src: "/projects/custom-rigging/rig-bones.png", alt: "Custom character rig bones visible in Roblox Studio" },
+      { src: "/projects/custom-rigging/second-character.png", alt: "Second custom character rig posed in Roblox Studio" },
+    ],
+  },
 ];
 
 function Header() {

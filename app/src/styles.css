@@ -279,6 +279,18 @@ iframe {
   border-radius: 5px;
 }
 
+#custom-rigging .project-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#custom-rigging .project-stills {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#custom-rigging .project-stills img {
+  aspect-ratio: 4 / 5;
+}
+
 .dialog-overlay {
   position: fixed;
   z-index: 100;
@@ -417,6 +429,10 @@ iframe {
     grid-template-columns: 1fr;
     gap: 12px;
     margin-top: 12px;
+  }
+
+  #custom-rigging .project-stills {
+    grid-template-columns: 1fr;
   }
 
   .project-card {
