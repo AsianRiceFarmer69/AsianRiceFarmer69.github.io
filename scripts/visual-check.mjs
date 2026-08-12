@@ -70,6 +70,7 @@ try {
   assert.equal(await desktop.locator(".project-card").count(), 8, "Expected eight clips across two projects");
   assert.equal(await desktop.locator(".project-stills img").count(), 2, "Expected two FPS development screenshots");
   assert.match(await desktop.locator("#fps-project").innerText(), /FPS Project/);
+  assert.equal(await desktop.getByText(/with sound/i).count(), 0, "The removed sound claim still renders");
   assert.equal(await desktop.locator(".dialog-video iframe").count(), 0, "Video iframe should load only after a clip is opened");
   for (const id of videoIds) {
     assert.equal(await desktop.locator(`[data-video-id="${id}"]`).count(), 1, `Missing project clip ${id}`);
